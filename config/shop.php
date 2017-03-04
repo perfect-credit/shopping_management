@@ -43,10 +43,10 @@ return array(
 		'html' => array(
 			'common' => array(
 				'content' => array(
-					// 'baseurl' => '/',
+					 'baseurl' => '/',
 				),
 				'template' => array(
-					// 'baseurl' => 'packages/aimeos/shop/themes/elegance',
+					 'baseurl' => 'packages/aimeos/shop/themes/elegance',
 				),
 			),
 		),
