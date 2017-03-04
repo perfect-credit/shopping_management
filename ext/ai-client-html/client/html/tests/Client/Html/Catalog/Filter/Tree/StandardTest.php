@@ -4,9 +4,9 @@ namespace Aimeos\Client\Html\Catalog\Filter\Tree;
 
 
 /**
- * @copyright Metaways Infosystems GmbH, 2012
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
- * @copyright Aimeos (aimeos.org), 2015
+ * @copyright Metaways Infosystems GmbH, 2012
+ * @copyright Aimeos (aimeos.org), 2015-2016
  */
 class StandardTest extends \PHPUnit_Framework_TestCase
 {
@@ -30,18 +30,6 @@ class StandardTest extends \PHPUnit_Framework_TestCase
 	}
 
 
-	public function testGetHeader()
-	{
-		$tags = array();
-		$expire = null;
-		$output = $this->object->getHeader( 1, $tags, $expire );
-
-		$this->assertNotNull( $output );
-		$this->assertEquals( '2022-01-01 00:00:00', $expire );
-		$this->assertEquals( 3, count( $tags ) );
-	}
-
-
 	public function testGetBody()
 	{
 		$catalogManager = \Aimeos\MShop\Catalog\Manager\Factory::createManager( \TestHelperHtml::getContext() );
@@ -60,7 +48,7 @@ class StandardTest extends \PHPUnit_Framework_TestCase
 		$this->assertContains( 'level-2', $output );
 
 		$this->assertEquals( '2022-01-01 00:00:00', $expire );
-		$this->assertEquals( 5, count( $tags ) );
+		$this->assertEquals( 1, count( $tags ) );
 	}
 
 
@@ -80,8 +68,8 @@ class StandardTest extends \PHPUnit_Framework_TestCase
 		$output = $this->object->getBody( 1, $tags, $expire );
 
 		$this->assertContains( 'level-2', $output );
-		$this->assertEquals( '2022-01-01 00:00:00', $expire );
-		$this->assertEquals( 8, count( $tags ) );
+		$this->assertEquals( '2019-01-01 00:00:00', $expire );
+		$this->assertEquals( 1, count( $tags ) );
 	}
 
 
@@ -102,7 +90,7 @@ class StandardTest extends \PHPUnit_Framework_TestCase
 
 		$this->assertNotContains( 'level-2', $output );
 		$this->assertEquals( '2022-01-01 00:00:00', $expire );
-		$this->assertEquals( 3, count( $tags ) );
+		$this->assertEquals( 1, count( $tags ) );
 	}
 
 

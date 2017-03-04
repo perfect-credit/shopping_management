@@ -2,7 +2,7 @@
 
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
- * @copyright Aimeos (aimeos.org), 2015
+ * @copyright Aimeos (aimeos.org), 2015-2016
  * @package Admin
  * @subpackage JQAdm
  */
@@ -327,6 +327,32 @@ class Standard
 
 
 	/**
+	 * Returns the text types that are managed by this subpart
+	 *
+	 * @return array List of text type codes
+	 */
+	protected function getTypes()
+	{
+		/** admin/jqadm/product/text/standard/types
+		 * List of text types that are managed by the product text subpart
+		 *
+		 * To extend or reduce the text types that can be managed by the product
+		 * text subpart, you can modify this configuration setting and add more
+		 * text types or remove existing ones.
+		 *
+		 * '''Note:''' You have to overwrite the corresponding template as well
+		 * to add or remove the corresponding input fields for the new text type
+		 * list.
+		 *
+		 * @param array List of text type codes
+		 * @since 2016.11
+		 * @category Developer
+		 */
+		return $this->getContext()->getConfig()->get( 'admin/jqadm/product/text/standard/types', $this->typelist );
+	}
+
+
+	/**
 	 * Returns the mapped input parameter or the existing items as expected by the template
 	 *
 	 * @param \Aimeos\MW\View\Iface $view View object with helpers and assigned parameters
@@ -353,7 +379,7 @@ class Standard
 				$type = $refItem->getType();
 				$langid = $refItem->getLanguageId();
 
-				if( in_array( $type, $this->typelist ) )
+				if( in_array( $type, $this->getTypes() ) )
 				{
 					$data['langid'][$langid] = $langid;
 					$data[$type]['listid'][$langid] = $listItem->getId();
@@ -404,7 +430,7 @@ class Standard
 
 		foreach( $langIds as $idx => $langid )
 		{
-			foreach( $this->typelist as $type )
+			foreach( $this->getTypes() as $type )
 			{
 				if( ( $content = trim( $view->param( 'text/' . $type . '/content/' . $idx ) ) ) === '' ) {
 					continue;
@@ -446,7 +472,7 @@ class Standard
 
 		foreach( $listItems as $id => $listItem )
 		{
-			if( in_array( $listItem->getRefItem()->getType(), $this->typelist ) ) {
+			if( in_array( $listItem->getRefItem()->getType(), $this->getTypes() ) ) {
 				$allListIds[] = $id;
 			}
 		}

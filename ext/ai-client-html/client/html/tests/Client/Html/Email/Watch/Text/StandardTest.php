@@ -1,13 +1,15 @@
 <?php
 
+/**
+ * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
+ * @copyright Metaways Infosystems GmbH, 2014
+ * @copyright Aimeos (aimeos.org), 2015-2016
+ */
+
+
 namespace Aimeos\Client\Html\Email\Watch\Text;
 
 
-/**
- * @copyright Metaways Infosystems GmbH, 2014
- * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
- * @copyright Aimeos (aimeos.org), 2015
- */
 class StandardTest extends \PHPUnit_Framework_TestCase
 {
 	private static $productItems;
@@ -28,7 +30,7 @@ class StandardTest extends \PHPUnit_Framework_TestCase
 		$result = $manager->searchItems( $search );
 
 		if( ( self::$customerItem = reset( $result ) ) === false ) {
-			throw new \Exception( 'No customer found' );
+			throw new \RuntimeException( 'No customer found' );
 		}
 
 		$manager = \Aimeos\MShop\Product\Manager\Factory::createManager( $context );
@@ -46,12 +48,6 @@ class StandardTest extends \PHPUnit_Framework_TestCase
 	}
 
 
-	/**
-	 * Sets up the fixture, for example, opens a network connection.
-	 * This method is called before a test is executed.
-	 *
-	 * @access protected
-	 */
 	protected function setUp()
 	{
 		$this->context = \TestHelperHtml::getContext();
@@ -69,33 +65,23 @@ class StandardTest extends \PHPUnit_Framework_TestCase
 	}
 
 
-	/**
-	 * Tears down the fixture, for example, closes a network connection.
-	 * This method is called after a test is executed.
-	 *
-	 * @access protected
-	 */
 	protected function tearDown()
 	{
 		unset( $this->object );
 	}
 
 
-	public function testGetHeader()
-	{
-		$output = $this->object->getHeader();
-		$this->assertNotNull( $output );
-	}
-
-
 	public function testGetBody()
 	{
 		$this->emailMock->expects( $this->once() )->method( 'setBody' )
-			->with( $this->stringContains( 'Dear' ) );
+			->with( $this->stringContains( 'Noire' ) );
 
 		$output = $this->object->getBody();
 
-		$this->assertStringStartsWith( 'Dear', $output );
+		$this->assertContains( 'One or more products', $output );
+		$this->assertContains( 'Cafe Noire Cappuccino', $output );
+		$this->assertContains( 'Cafe Noire Expresso', $output );
+		$this->assertContains( 'If you have any questions', $output );
 	}
 
 

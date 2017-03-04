@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @copyright Metaways Infosystems GmbH, 2014
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
- * @copyright Aimeos (aimeos.org), 2015
+ * @copyright Metaways Infosystems GmbH, 2014
+ * @copyright Aimeos (aimeos.org), 2015-2016
  * @package Client
  * @subpackage Html
  */
@@ -19,7 +19,7 @@ namespace Aimeos\Client\Html\Basket;
  * @subpackage Html
  */
 abstract class Base
-	extends \Aimeos\Client\Html\Common\Client\Factory\Base
+	extends \Aimeos\Client\Html\Common\Client\Summary\Base
 {
 	/**
 	 * Removes all cached basket parts from the cache.

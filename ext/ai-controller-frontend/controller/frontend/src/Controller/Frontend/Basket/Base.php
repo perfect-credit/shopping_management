@@ -236,7 +236,7 @@ abstract class Base extends \Aimeos\Controller\Frontend\Base implements Iface
 						$this->getValue( $attrIds, 'config', array() ),
 						$this->getValue( $attrIds, 'hidden', array() ),
 						$this->getValue( $attrIds, 'custom', array() ),
-						$product->getWarehouseCode()
+						$product->getStockType()
 				);
 
 				$basket->deleteProduct( $pos );
@@ -417,8 +417,8 @@ abstract class Base extends \Aimeos\Controller\Frontend\Base implements Iface
 		$search = $productManager->createSearch( true );
 
 		$expr = array(
-				$search->compare( '==', 'product.id', $subProductIds ),
-				$search->getConditions(),
+			$search->compare( '==', 'product.id', $subProductIds ),
+			$search->getConditions(),
 		);
 
 		if( count( $variantAttributeIds ) > 0 )
@@ -456,76 +456,5 @@ abstract class Base extends \Aimeos\Controller\Frontend\Base implements Iface
 		}
 
 		return $default;
-	}
-
-
-	/**
-	 * Checks if the product is part of at least one category in the product catalog.
-	 *
-	 * @param string $prodid Unique ID of the product
-	 * @throws \Aimeos\Controller\Frontend\Basket\Exception If product is not associated to at least one category
-	 * @deprecated 2016.05
-	 */
-	protected function checkCategory( $prodid )
-	{
-		$catalogListManager = \Aimeos\MShop\Factory::createManager( $this->getContext(), 'catalog/lists' );
-
-		$search = $catalogListManager->createSearch( true );
-		$expr = array(
-				$search->compare( '==', 'catalog.lists.refid', $prodid ),
-				$search->getConditions()
-		);
-		$search->setConditions( $search->combine( '&&', $expr ) );
-		$search->setSlice( 0, 1 );
-
-		$result = $catalogListManager->searchItems( $search );
-
-		if( reset( $result ) === false )
-		{
-			$msg = sprintf( 'Adding product with ID "%1$s" is not allowed', $prodid );
-			throw new \Aimeos\Controller\Frontend\Basket\Exception( $msg );
-		}
-	}
-
-
-	/**
-	 * Returns the highest stock level for the product.
-	 *
-	 * @param string $prodid Unique ID of the product
-	 * @param string $warehouse Unique code of the warehouse
-	 * @return integer|null Number of available items in stock (null for unlimited stock)
-	 */
-	protected function getStockLevel( $prodid, $warehouse )
-	{
-		$manager = \Aimeos\MShop\Factory::createManager( $this->getContext(), 'product/stock' );
-
-		$search = $manager->createSearch( true );
-		$expr = array(
-				$search->compare( '==', 'product.stock.parentid', $prodid ),
-				$search->getConditions(),
-				$search->compare( '==', 'product.stock.warehouse.code', $warehouse ),
-		);
-		$search->setConditions( $search->combine( '&&', $expr ) );
-
-		$result = $manager->searchItems( $search );
-
-		if( empty( $result ) )
-		{
-			$msg = sprintf( 'No stock for product ID "%1$s" and warehouse "%2$s" available', $prodid, $warehouse );
-			throw new \Aimeos\Controller\Frontend\Basket\Exception( $msg );
-		}
-
-		$stocklevel = null;
-
-		foreach( $result as $item )
-		{
-			if( ( $stock = $item->getStockLevel() ) === null ) {
-				return null;
-			}
-
-			$stocklevel = max( (int) $stocklevel, $item->getStockLevel() );
-		}
-
-		return $stocklevel;
 	}
 }

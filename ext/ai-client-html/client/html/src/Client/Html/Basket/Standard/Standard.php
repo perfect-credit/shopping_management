@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @copyright Metaways Infosystems GmbH, 2012
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
- * @copyright Aimeos (aimeos.org), 2015
+ * @copyright Metaways Infosystems GmbH, 2012
+ * @copyright Aimeos (aimeos.org), 2015-2016
  * @package Client
  * @subpackage Html
  */
@@ -56,29 +56,7 @@ class Standard
 	 * @category Developer
 	 */
 	private $subPartPath = 'client/html/basket/standard/standard/subparts';
-
-	/** client/html/basket/standard/detail/name
-	 * Name of the detail part used by the basket standard detail client implementation
-	 *
-	 * Use "Myname" if your class is named "\Aimeos\Client\Html\Basket\Standard\Detail\Myname".
-	 * The name is case-sensitive and you should avoid camel case names like "MyName".
-	 *
-	 * @param string Last part of the client class name
-	 * @since 2014.03
-	 * @category Developer
-	 */
-
-	/** client/html/basket/standard/coupon/name
-	 * Name of the detail part used by the basket standard coupon client implementation
-	 *
-	 * Use "Myname" if your class is named "\Aimeos\Client\Html\Basket\Standard\Detail\Myname".
-	 * The name is case-sensitive and you should avoid camel case names like "MyName".
-	 *
-	 * @param string Last part of the client class name
-	 * @since 2014.03
-	 * @category Developer
-	 */
-	private $subPartNames = array( 'detail', 'coupon' );
+	private $subPartNames = array();
 	private $controller;
 	private $cache;
 
@@ -309,21 +287,6 @@ class Standard
 		try
 		{
 			$options = array(
-
-				/** client/html/basket/require-stock
-				 * Customers can order products only if there are enough products in stock
-				 *
-				 * Checks that the requested product quantity is in stock before
-				 * the customer can add them to his basket and order them. If there
-				 * are not enough products available, the customer will get a notice.
-				 *
-				 * @param boolean True if products must be in stock, false if products can be sold without stock
-				 * @since 2014.03
-				 * @category Developer
-				 * @category User
-				 */
-				'stock' => $view->config( 'client/html/basket/require-stock', true ),
-
 				/** client/html/basket/require-variant
 				 * A variant of a selection product must be chosen
 				 *
@@ -348,11 +311,15 @@ class Standard
 				case 'add':
 					$this->addProducts( $view, $options );
 					break;
+				case 'coupon-delete':
+					$this->deleteCoupon( $view );
+					break;
 				case 'delete':
 					$this->deleteProducts( $view );
 					break;
 				default:
 					$this->editProducts( $view, $options );
+					$this->addCoupon( $view );
 			}
 
 			parent::process();
@@ -383,7 +350,7 @@ class Standard
 			 * @category Developer
 			 * @category User
 			 */
-			$check = $view->config( 'client/html/basket/standard/check', 1 );
+			$check = (int) $view->config( 'client/html/basket/standard/check', 1 );
 
 			switch( $check )
 			{
@@ -410,7 +377,7 @@ class Standard
 			$errors = array( $context->getI18n()->dt( 'mshop', $e->getMessage() ) );
 			$errors = array_merge( $errors, $this->translatePluginErrorCodes( $e->getErrorCodes() ) );
 
-			$view->summaryErrorCodes = $e->getErrorCodes();
+			$view->standardErrorCodes = $e->getErrorCodes();
 			$view->standardErrorList = $view->get( 'standardErrorList', array() ) + $errors;
 		}
 		catch( \Aimeos\MShop\Exception $e )
@@ -475,18 +442,56 @@ class Standard
 
 			}
 
-			if( empty( $params ) === false )
-			{
-				$view->standardParams = $this->getClientParams( $view->param() );
+			if( empty( $params ) === false ) {
 				$view->standardBackUrl = $view->url( $target, $controller, $action, $params, array(), $config );
 			}
 
 			$view->standardBasket = $this->getController()->get();
+			$view->standardTaxRates = $this->getTaxRates( $view->standardBasket );
 
 			$this->cache = $view;
 		}
 
 		return $this->cache;
+	}
+
+
+	/**
+	 * Adds the coupon specified by the view parameters from the basket.
+	 *
+	 * @param \Aimeos\MW\View\Iface $view View object
+	 */
+	protected function addCoupon( \Aimeos\MW\View\Iface $view )
+	{
+		if( ( $coupon = $view->param( 'b_coupon' ) ) != '' )
+		{
+			$controller = $this->getController();
+
+			/** client/html/basket/standard/coupon/allowed
+			 * Number of coupon codes a customer is allowed to enter
+			 *
+			 * This configuration option enables shop owners to limit the number of coupon
+			 * codes that can be added by a customer to his current basket. By default, only
+			 * one coupon code is allowed per order.
+			 *
+			 * Coupon codes are valid until a payed order is placed by the customer. The
+			 * "count" of the codes is decreased afterwards. If codes are not personalized
+			 * the codes can be reused in the next order until their "count" reaches zero.
+			 *
+			 * @param integer Positive number of coupon codes including zero
+			 * @since 2014.05
+			 * @category User
+			 * @category Developer
+			 */
+			$allowed = $this->getContext()->getConfig()->get( 'client/html/basket/standard/coupon/allowed', 1 );
+
+			if( $allowed <= count( $controller->get()->getCoupons() ) ) {
+				throw new \Aimeos\Client\Html\Exception( sprintf( 'Number of coupon codes exceeds the limit' ) );
+			}
+
+			$controller->addCoupon( $coupon );
+			$this->clearCached();
+		}
 	}
 
 
@@ -511,7 +516,7 @@ class Standard
 				'attrconfid' => array_filter( (array) $view->param( 'b_attrconfid', array() ) ),
 				'attrhideid' => array_filter( (array) $view->param( 'b_attrhideid', array() ) ),
 				'attrcustid' => array_filter( (array) $view->param( 'b_attrcustid', array() ) ),
-				'warehouse' => $view->param( 'b_warehouse', 'default' ),
+				'stocktype' => $view->param( 'b_stocktype', 'default' ),
 			);
 		}
 
@@ -538,8 +543,24 @@ class Standard
 			( isset( $values['attrconfid'] ) ? array_filter( (array) $values['attrconfid'] ) : array() ),
 			( isset( $values['attrhideid'] ) ? array_filter( (array) $values['attrhideid'] ) : array() ),
 			( isset( $values['attrcustid'] ) ? array_filter( (array) $values['attrcustid'] ) : array() ),
-			( isset( $values['warehouse'] ) ? (string) $values['warehouse'] : 'default' )
+			( isset( $values['stocktype'] ) ? (string) $values['stocktype'] : 'default' )
 		);
+	}
+
+
+	/**
+	 * Removes the coupon specified by the view parameters from the basket.
+	 *
+	 * @param \Aimeos\MW\View\Iface $view View object
+	 */
+	protected function deleteCoupon( \Aimeos\MW\View\Iface $view )
+	{
+		if( ( $coupon = $view->param( 'b_coupon' ) ) != '' )
+		{
+			$this->clearCached();
+			$controller = $this->getController();
+			$controller->deleteCoupon( $coupon );
+		}
 	}
 
 

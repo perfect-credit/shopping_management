@@ -2,7 +2,7 @@
 
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
- * @copyright Aimeos (aimeos.org), 2015
+ * @copyright Aimeos (aimeos.org), 2015-2016
  * @package MShop
  * @subpackage Customer
  */
@@ -163,6 +163,20 @@ class Laravel
 			'label' => 'Customer address website',
 			'code' => 'customer.address.website',
 			'internalcode' => 'lvuad."website"',
+			'type' => 'string',
+			'internaltype' => \Aimeos\MW\DB\Statement\Base::PARAM_STR,
+		),
+		'customer.address.longitude' => array(
+			'label' => 'Customer address longitude',
+			'code' => 'customer.address.longitude',
+			'internalcode' => 'lvuad."longitude"',
+			'type' => 'string',
+			'internaltype' => \Aimeos\MW\DB\Statement\Base::PARAM_STR,
+		),
+		'customer.address.latitude' => array(
+			'label' => 'Customer address latitude',
+			'code' => 'customer.address.latitude',
+			'internalcode' => 'lvuad."latitude"',
 			'type' => 'string',
 			'internaltype' => \Aimeos\MW\DB\Statement\Base::PARAM_STR,
 		),

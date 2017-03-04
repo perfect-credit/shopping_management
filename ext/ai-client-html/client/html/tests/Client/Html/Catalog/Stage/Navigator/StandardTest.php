@@ -4,9 +4,9 @@ namespace Aimeos\Client\Html\Catalog\Stage\Navigator;
 
 
 /**
- * @copyright Metaways Infosystems GmbH, 2014
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
- * @copyright Aimeos (aimeos.org), 2015
+ * @copyright Metaways Infosystems GmbH, 2014
+ * @copyright Aimeos (aimeos.org), 2015-2016
  */
 class StandardTest extends \PHPUnit_Framework_TestCase
 {
@@ -43,7 +43,7 @@ class StandardTest extends \PHPUnit_Framework_TestCase
 	public function testGetHeader()
 	{
 		$view = $this->object->getView();
-		$helper = new \Aimeos\MW\View\Helper\Param\Standard( $view, array( 'l_pos' => 1 ) );
+		$helper = new \Aimeos\MW\View\Helper\Param\Standard( $view, array( 'd_pos' => 1 ) );
 		$view->addHelper( 'param', $helper );
 
 		$view->navigationPrev = '#';
@@ -59,7 +59,7 @@ class StandardTest extends \PHPUnit_Framework_TestCase
 	public function testGetBody()
 	{
 		$view = $this->object->getView();
-		$helper = new \Aimeos\MW\View\Helper\Param\Standard( $view, array( 'l_pos' => 1 ) );
+		$helper = new \Aimeos\MW\View\Helper\Param\Standard( $view, array( 'd_pos' => 1 ) );
 		$view->addHelper( 'param', $helper );
 
 		$view->navigationPrev = '#';
@@ -76,7 +76,7 @@ class StandardTest extends \PHPUnit_Framework_TestCase
 	public function testModifyHeader()
 	{
 		$view = $this->object->getView();
-		$helper = new \Aimeos\MW\View\Helper\Param\Standard( $view, array( 'l_pos' => 1 ) );
+		$helper = new \Aimeos\MW\View\Helper\Param\Standard( $view, array( 'd_pos' => 1 ) );
 		$view->addHelper( 'param', $helper );
 
 		$content = '<!-- catalog.stage.navigator -->test<!-- catalog.stage.navigator -->';
@@ -89,7 +89,7 @@ class StandardTest extends \PHPUnit_Framework_TestCase
 	public function testModifyBody()
 	{
 		$view = $this->object->getView();
-		$helper = new \Aimeos\MW\View\Helper\Param\Standard( $view, array( 'l_pos' => 1 ) );
+		$helper = new \Aimeos\MW\View\Helper\Param\Standard( $view, array( 'd_pos' => 1 ) );
 		$view->addHelper( 'param', $helper );
 
 		$content = '<!-- catalog.stage.navigator -->test<!-- catalog.stage.navigator -->';

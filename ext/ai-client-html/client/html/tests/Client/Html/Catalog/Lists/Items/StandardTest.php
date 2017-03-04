@@ -4,9 +4,9 @@ namespace Aimeos\Client\Html\Catalog\Lists\Items;
 
 
 /**
- * @copyright Metaways Infosystems GmbH, 2012
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
- * @copyright Aimeos (aimeos.org), 2015
+ * @copyright Metaways Infosystems GmbH, 2012
+ * @copyright Aimeos (aimeos.org), 2015-2016
  */
 class StandardTest extends \PHPUnit_Framework_TestCase
 {
@@ -35,7 +35,7 @@ class StandardTest extends \PHPUnit_Framework_TestCase
 		$catItems = $catalogManager->searchItems( $search );
 
 		if( ( $catItem = reset( $catItems ) ) === false ) {
-			throw new \Exception( 'No catalog item found' );
+			throw new \RuntimeException( 'No catalog item found' );
 		}
 
 		$domains = array( 'media', 'price', 'text', 'attribute', 'product' );

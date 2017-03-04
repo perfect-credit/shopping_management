@@ -1,25 +1,21 @@
 <?php
 
+/**
+ * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
+ * @copyright Metaways Infosystems GmbH, 2012
+ * @copyright Aimeos (aimeos.org), 2015-2016
+ */
+
+
 namespace Aimeos\Client\Html\Catalog\Stage;
 
 
-/**
- * @copyright Metaways Infosystems GmbH, 2012
- * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
- * @copyright Aimeos (aimeos.org), 2015
- */
 class StandardTest extends \PHPUnit_Framework_TestCase
 {
 	private $object;
 	private $context;
 
 
-	/**
-	 * Sets up the fixture, for example, opens a network connection.
-	 * This method is called before a test is executed.
-	 *
-	 * @access protected
-	 */
 	protected function setUp()
 	{
 		$this->context = \TestHelperHtml::getContext();
@@ -30,12 +26,6 @@ class StandardTest extends \PHPUnit_Framework_TestCase
 	}
 
 
-	/**
-	 * Tears down the fixture, for example, closes a network connection.
-	 * This method is called after a test is executed.
-	 *
-	 * @access protected
-	 */
 	protected function tearDown()
 	{
 		unset( $this->object );
@@ -66,7 +56,7 @@ class StandardTest extends \PHPUnit_Framework_TestCase
 			->getMock();
 
 		$object->expects( $this->once() )->method( 'setViewParams' )
-			->will( $this->throwException( new \Exception() ) );
+			->will( $this->throwException( new \RuntimeException() ) );
 
 		$object->setView( \TestHelperHtml::getView() );
 
@@ -81,6 +71,9 @@ class StandardTest extends \PHPUnit_Framework_TestCase
 		$output = $this->object->getBody( 1, $tags, $expire );
 
 		$this->assertStringStartsWith( '<section class="aimeos catalog-stage">', $output );
+		$this->assertContains( '<div class="catalog-stage-breadcrumb">', $output );
+		$this->assertRegExp( '#Your search result#smU', $output );
+
 		$this->assertEquals( null, $expire );
 		$this->assertEquals( 0, count( $tags ) );
 	}
@@ -97,6 +90,12 @@ class StandardTest extends \PHPUnit_Framework_TestCase
 		$output = $this->object->getBody( 1, $tags, $expire );
 
 		$this->assertStringStartsWith( '<section class="aimeos catalog-stage home categories coffee">', $output );
+		$this->assertContains( '<div class="catalog-stage-image">', $output );
+		$this->assertContains( 'Cafe Stage image', $output );
+
+		$this->assertContains( '<div class="catalog-stage-breadcrumb">', $output );
+		$this->assertRegExp( '#Root.*.Categories.*.Kaffee.*#smU', $output );
+
 		$this->assertEquals( '2019-01-01 00:00:00', $expire );
 		$this->assertEquals( 1, count( $tags ) );
 	}
@@ -158,7 +157,7 @@ class StandardTest extends \PHPUnit_Framework_TestCase
 			->getMock();
 
 		$object->expects( $this->once() )->method( 'setViewParams' )
-			->will( $this->throwException( new \Exception( 'test exception' ) ) );
+			->will( $this->throwException( new \RuntimeException( 'test exception' ) ) );
 
 		$object->setView( \TestHelperHtml::getView() );
 
@@ -180,7 +179,7 @@ class StandardTest extends \PHPUnit_Framework_TestCase
 
 	public function testGetSubClient()
 	{
-		$client = $this->object->getSubClient( 'image', 'Standard' );
+		$client = $this->object->getSubClient( 'navigator', 'Standard' );
 		$this->assertInstanceOf( '\\Aimeos\\Client\\HTML\\Iface', $client );
 	}
 
@@ -213,7 +212,7 @@ class StandardTest extends \PHPUnit_Framework_TestCase
 		$items = $catalogManager->searchItems( $search );
 
 		if( ( $item = reset( $items ) ) === false ) {
-			throw new \Exception( 'No catalog item with code "cafe" found' );
+			throw new \RuntimeException( 'No catalog item with code "cafe" found' );
 		}
 
 		return $item;

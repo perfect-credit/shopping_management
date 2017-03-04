@@ -1,8 +1,8 @@
 <?php
 
 /**
- * @copyright Copyright (c) Metaways Infosystems GmbH, 2014
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
+ * @copyright Metaways Infosystems GmbH, 2014
  * @copyright Aimeos (aimeos.org), 2015-2016
  */
 
@@ -22,6 +22,5 @@ $string = sprintf( $msg, $order->getId(), date_create( $order->getTimeCreated() 
 
 
 <?php echo wordwrap( strip_tags( $string ) ); ?>
-<?php echo $this->get( 'introBody' ); ?>
 <?php $this->block()->stop(); ?>
 <?php echo $this->block()->get( 'email/delivery/text/intro' ); ?>

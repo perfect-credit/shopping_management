@@ -4,9 +4,9 @@ namespace Aimeos\Client\Html\Checkout\Confirm;
 
 
 /**
- * @copyright Metaways Infosystems GmbH, 2013
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
- * @copyright Aimeos (aimeos.org), 2015
+ * @copyright Metaways Infosystems GmbH, 2013
+ * @copyright Aimeos (aimeos.org), 2015-2016
  */
 class StandardTest extends \PHPUnit_Framework_TestCase
 {
@@ -48,7 +48,7 @@ class StandardTest extends \PHPUnit_Framework_TestCase
 			->getMock();
 
 		$object->expects( $this->once() )->method( 'setViewParams' )
-			->will( $this->throwException( new \Exception() ) );
+			->will( $this->throwException( new \RuntimeException() ) );
 
 		$object->setView( \TestHelperHtml::getView() );
 
@@ -58,10 +58,24 @@ class StandardTest extends \PHPUnit_Framework_TestCase
 
 	public function testGetBody()
 	{
-		$this->context->getSession()->set( 'aimeos/orderid', $this->getOrder( '2011-09-17 16:14:32' )->getId() );
+		$orderid = $this->getOrder( '2011-09-17 16:14:32' )->getId();
+		$this->context->getSession()->set( 'aimeos/orderid', $orderid );
 
 		$output = $this->object->getBody();
-		$this->assertStringStartsWith( '<section class="aimeos checkout-confirm">', $output );
+
+		$this->assertContains( '<section class="aimeos checkout-confirm">', $output );
+		$this->assertContains( '<div class="checkout-confirm-retry">', $output );
+		$this->assertContains( '<div class="checkout-confirm-basic">', $output );
+		$this->assertContains( '<div class="checkout-confirm-detail', $output );
+		$this->assertRegExp( '#<span class="value">.*' . $orderid . '.*</span>#smU', $output );
+
+		$this->assertContains( 'mr  Our Unittest', $output );
+		$this->assertContains( 'Example company', $output );
+
+		$this->assertContains( 'solucia', $output );
+		$this->assertContains( 'paypal', $output );
+
+		$this->assertContains( 'This is a comment', $output );
 	}
 
 
@@ -121,7 +135,7 @@ class StandardTest extends \PHPUnit_Framework_TestCase
 			->getMock();
 
 		$object->expects( $this->once() )->method( 'setViewParams' )
-			->will( $this->throwException( new \Exception() ) );
+			->will( $this->throwException( new \RuntimeException() ) );
 
 		$object->setView( \TestHelperHtml::getView() );
 
@@ -179,7 +193,7 @@ class StandardTest extends \PHPUnit_Framework_TestCase
 		$result = $orderManager->searchItems( $search );
 
 		if( ( $item = reset( $result ) ) === false ) {
-			throw new \Exception( 'No order found' );
+			throw new \RuntimeException( 'No order found' );
 		}
 
 		return $item;

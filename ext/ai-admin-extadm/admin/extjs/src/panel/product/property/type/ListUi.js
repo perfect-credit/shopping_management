@@ -10,16 +10,15 @@ MShop.panel.product.property.type.ListUi = Ext.extend(MShop.panel.AbstractListUi
     recordName : 'Product_Property_Type',
     idProperty : 'product.property.type.id',
     siteidProperty : 'product.property.type.siteid',
-
     itemUiXType : 'MShop.panel.product.property.type.itemui',
 
-    // Sort by id ASC
+    autoExpandColumn : 'product-property-type-label',
+
     sortInfo : {
-        field : 'product.property.type.id',
+        field : 'product.property.type.label',
         direction : 'ASC'
     },
 
-    // Create filter
     filterConfig : {
         filters : [{
             dataIndex : 'product.property.type.label',
@@ -28,7 +27,6 @@ MShop.panel.product.property.type.ListUi = Ext.extend(MShop.panel.AbstractListUi
         }]
     },
 
-    // Override initComponent to set Label of tab.
     initComponent : function() {
         this.title = MShop.I18n.dt('admin', 'Product property type');
 
@@ -37,8 +35,6 @@ MShop.panel.product.property.type.ListUi = Ext.extend(MShop.panel.AbstractListUi
 
         MShop.panel.product.property.type.ListUi.superclass.initComponent.call(this);
     },
-
-    autoExpandColumn : 'product-property-type-label',
 
     getColumns : function() {
         return [{

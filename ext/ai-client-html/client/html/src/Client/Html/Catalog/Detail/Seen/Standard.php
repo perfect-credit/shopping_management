@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @copyright Metaways Infosystems GmbH, 2012
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
- * @copyright Aimeos (aimeos.org), 2015
+ * @copyright Metaways Infosystems GmbH, 2012
+ * @copyright Aimeos (aimeos.org), 2015-2016
  * @package Client
  * @subpackage Html
  */
@@ -68,20 +68,6 @@ class Standard
 	 * @return string HTML code
 	 */
 	public function getBody( $uid = '', array &$tags = array(), &$expire = null )
-	{
-		return '';
-	}
-
-
-	/**
-	 * Returns the HTML string for insertion into the header.
-	 *
-	 * @param string $uid Unique identifier for the output if the content is placed more than once on the same page
-	 * @param array &$tags Result array for the list of tags that are associated to the output
-	 * @param string|null &$expire Result variable for the expiration date of the output (null for no expiry)
-	 * @return string|null String including HTML tags for the header on error
-	 */
-	public function getHeader( $uid = '', array &$tags = array(), &$expire = null )
 	{
 		return '';
 	}
@@ -278,9 +264,7 @@ class Standard
 			$domains = $config->get( 'client/html/catalog/detail/seen/domains', $domains );
 
 			$view->seenProductItem = \Aimeos\MShop\Factory::createManager( $context, 'product' )->getItem( $id, $domains );
-
-			$this->addMetaItem( $view->seenProductItem, 'product', $expire, $tags );
-			$this->addMetaList( $view->seenProductItem->getId(), 'product', $expire );
+			$this->addMetaItems( $view->seenProductItem, $expire, $tags );
 
 			$output = '';
 			foreach( $this->getSubClients() as $subclient ) {
@@ -309,11 +293,11 @@ class Standard
 			 * @see client/html/catalog/detail/seen/standard/template-header
 			 */
 			$tplconf = 'client/html/catalog/detail/seen/standard/template-body';
-			$default = 'catalog/detail/seen-body-default.php';
+			$default = 'catalog/detail/seen-partial-default.php';
 
 			$html = $view->render( $view->config( $tplconf, $default ) );
 
-			$cache->set( $key, $html, $tags, $expire );
+			$cache->set( $key, $html, $expire, $tags );
 		}
 
 		return $html;

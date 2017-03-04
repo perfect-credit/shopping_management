@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @copyright Metaways Infosystems GmbH, 2012
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
- * @copyright Aimeos (aimeos.org), 2015
+ * @copyright Metaways Infosystems GmbH, 2012
+ * @copyright Aimeos (aimeos.org), 2015-2016
  * @package Client
  * @subpackage Html
  */
@@ -57,54 +57,10 @@ class Standard
 	 */
 	private $subPartPath = 'client/html/catalog/lists/standard/subparts';
 
-	/** client/html/catalog/lists/head/name
-	 * Name of the head part used by the catalog list client implementation
-	 *
-	 * Use "Myname" if your class is named "\Aimeos\Client\Html\Catalog\Lists\Head\Myname".
-	 * The name is case-sensitive and you should avoid camel case names like "MyName".
-	 *
-	 * @param string Last part of the client class name
-	 * @since 2014.03
-	 * @category Developer
-	 */
-
-	/** client/html/catalog/lists/quote/name
-	 * Name of the quote part used by the catalog list client implementation
-	 *
-	 * Use "Myname" if your class is named "\Aimeos\Client\Html\Catalog\Lists\Quote\Myname".
-	 * The name is case-sensitive and you should avoid camel case names like "MyName".
-	 *
-	 * @param string Last part of the client class name
-	 * @since 2014.03
-	 * @category Developer
-	 */
-
 	/** client/html/catalog/lists/promo/name
 	 * Name of the promotion part used by the catalog list client implementation
 	 *
 	 * Use "Myname" if your class is named "\Aimeos\Client\Html\Catalog\Lists\Promo\Myname".
-	 * The name is case-sensitive and you should avoid camel case names like "MyName".
-	 *
-	 * @param string Last part of the client class name
-	 * @since 2014.03
-	 * @category Developer
-	 */
-
-	/** client/html/catalog/lists/type/name
-	 * Name of the type part used by the catalog list client implementation
-	 *
-	 * Use "Myname" if your class is named "\Aimeos\Client\Html\Catalog\Lists\Type\Myname".
-	 * The name is case-sensitive and you should avoid camel case names like "MyName".
-	 *
-	 * @param string Last part of the client class name
-	 * @since 2016.07
-	 * @category Developer
-	 */
-
-	/** client/html/catalog/lists/pagination/name
-	 * Name of the pagination part used by the catalog list client implementation
-	 *
-	 * Use "Myname" if your class is named "\Aimeos\Client\Html\Catalog\Lists\Pagination\Myname".
 	 * The name is case-sensitive and you should avoid camel case names like "MyName".
 	 *
 	 * @param string Last part of the client class name
@@ -122,7 +78,7 @@ class Standard
 	 * @since 2014.03
 	 * @category Developer
 	 */
-	private $subPartNames = array( 'head', 'quote', 'promo', 'type', 'pagination', 'items', 'pagination' );
+	private $subPartNames = array( 'promo', 'items' );
 
 	private $tags = array();
 	private $expire;
@@ -142,7 +98,7 @@ class Standard
 		$prefixes = array( 'f', 'l' );
 		$context = $this->getContext();
 
-		/** client/html/catalog/list
+		/** client/html/catalog/lists
 		 * All parameters defined for the catalog list component and its subparts
 		 *
 		 * This returns all settings related to the filter component.
@@ -154,7 +110,7 @@ class Standard
 		 */
 		$confkey = 'client/html/catalog/lists';
 
-		if( $context->getUserId() != null || ( $html = $this->getCached( 'body', $uid, $prefixes, $confkey ) ) === null )
+		if( ( $html = $this->getCached( 'body', $uid, $prefixes, $confkey ) ) === null )
 		{
 			$view = $this->getView();
 
@@ -256,7 +212,7 @@ class Standard
 		$context = $this->getContext();
 		$confkey = 'client/html/catalog/lists';
 
-		if( $context->getUserId() != null || ( $html = $this->getCached( 'header', $uid, $prefixes, $confkey ) ) === null )
+		if( ( $html = $this->getCached( 'header', $uid, $prefixes, $confkey ) ) === null )
 		{
 			$view = $this->getView();
 
@@ -506,9 +462,7 @@ class Standard
 				}
 
 				$view->listCatPath = $listCatPath;
-
-				$this->addMetaItem( $listCatPath, 'catalog', $this->expire, $this->tags );
-				$this->addMetaList( array_keys( $listCatPath ), 'catalog', $this->expire );
+				$this->addMetaItems( $listCatPath, $this->expire, $this->tags );
 			}
 
 			/** client/html/catalog/lists/stock/enable
@@ -533,13 +487,11 @@ class Standard
 			 * @see client/html/catalog/stock/url/config
 			 */
 			if( !empty( $products ) && $config->get( 'client/html/catalog/lists/stock/enable', true ) === true ) {
-				$view->listStockUrl = $this->getStockUrl( $view, array_keys( $products ) );
+				$view->listStockUrl = $this->getStockUrl( $view, $products );
 			}
 
 
-			$this->addMetaItem( $products, 'product', $this->expire, $this->tags );
-			$this->addMetaList( array_keys( $products ), 'product', $this->expire );
-
+			$this->addMetaItems( $products, $this->expire, $this->tags );
 			// Delete cache when products are added or deleted even when in "tag-all" mode
 			$this->tags[] = 'product';
 
@@ -557,92 +509,5 @@ class Standard
 		$tags = array_merge( $tags, $this->tags );
 
 		return $this->cache;
-	}
-
-
-	/**
-	 * Returns the URL to fetch the stock level details of the given products
-	 *
-	 * @param \Aimeos\MW\View\Iface $view View object
-	 * @param array $productIds List of product IDs
-	 * @return string Generated stock level URL
-	 */
-	protected function getStockUrl( \Aimeos\MW\View\Iface $view, array $productIds )
-	{
-		/** client/html/catalog/stock/url/target
-		 * Destination of the URL where the controller specified in the URL is known
-		 *
-		 * The destination can be a page ID like in a content management system or the
-		 * module of a software development framework. This "target" must contain or know
-		 * the controller that should be called by the generated URL.
-		 *
-		 * @param string Destination of the URL
-		 * @since 2014.03
-		 * @category Developer
-		 * @see client/html/catalog/stock/url/controller
-		 * @see client/html/catalog/stock/url/action
-		 * @see client/html/catalog/stock/url/config
-		 */
-		$stockTarget = $view->config( 'client/html/catalog/stock/url/target' );
-
-		/** client/html/catalog/stock/url/controller
-		 * Name of the controller whose action should be called
-		 *
-		 * In Model-View-Controller (MVC) applications, the controller contains the methods
-		 * that create parts of the output displayed in the generated HTML page. Controller
-		 * names are usually alpha-numeric.
-		 *
-		 * @param string Name of the controller
-		 * @since 2014.03
-		 * @category Developer
-		 * @see client/html/catalog/stock/url/target
-		 * @see client/html/catalog/stock/url/action
-		 * @see client/html/catalog/stock/url/config
-		*/
-		$stockController = $view->config( 'client/html/catalog/stock/url/controller', 'catalog' );
-
-		/** client/html/catalog/stock/url/action
-		 * Name of the action that should create the output
-		 *
-		 * In Model-View-Controller (MVC) applications, actions are the methods of a
-		 * controller that create parts of the output displayed in the generated HTML page.
-		 * Action names are usually alpha-numeric.
-		 *
-		 * @param string Name of the action
-		 * @since 2014.03
-		 * @category Developer
-		 * @see client/html/catalog/stock/url/target
-		 * @see client/html/catalog/stock/url/controller
-		 * @see client/html/catalog/stock/url/config
-		*/
-		$stockAction = $view->config( 'client/html/catalog/stock/url/action', 'stock' );
-
-		/** client/html/catalog/stock/url/config
-		 * Associative list of configuration options used for generating the URL
-		 *
-		 * You can specify additional options as key/value pairs used when generating
-		 * the URLs, like
-		 *
-		 *  client/html/<clientname>/url/config = array( 'absoluteUri' => true )
-		 *
-		 * The available key/value pairs depend on the application that embeds the e-commerce
-		 * framework. This is because the infrastructure of the application is used for
-		 * generating the URLs. The full list of available config options is referenced
-		 * in the "see also" section of this page.
-		 *
-		 * @param string Associative list of configuration options
-		 * @since 2014.03
-		 * @category Developer
-		 * @see client/html/catalog/stock/url/target
-		 * @see client/html/catalog/stock/url/controller
-		 * @see client/html/catalog/stock/url/action
-		 * @see client/html/url/config
-		*/
-		$stockConfig = $view->config( 'client/html/catalog/stock/url/config', array() );
-
-		sort( $productIds );
-
-		$params = array( 's_prodid' => implode( ' ', $productIds ) );
-		return $view->url( $stockTarget, $stockController, $stockAction, $params, array(), $stockConfig );
 	}
 }

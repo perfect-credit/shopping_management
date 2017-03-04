@@ -1,8 +1,8 @@
 <?php
 
 /**
- * @copyright Copyright (c) Metaways Infosystems GmbH, 2013
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
+ * @copyright Metaways Infosystems GmbH, 2013
  * @copyright Aimeos (aimeos.org), 2015-2016
  */
 
@@ -24,23 +24,26 @@ $seenList = $this->get( 'seenItems', array() );
  */
 $count = $this->config( 'client/html/catalog/session/seen/count/enable', 1 );
 
+
 ?>
 <?php $this->block()->start( 'catalog/session/seen' ); ?>
 <section class="catalog-session-seen">
+
 	<h2 class="header">
-<?php echo $this->translate( 'client', 'Last seen' ); ?>
-<?php if( $count ) : ?>
-		<span class="count"><?php echo count( $seenList ); ?></span>
-<?php endif; ?>
+		<?php echo $this->translate( 'client', 'Last seen' ); ?>
+		<?php if( $count ) : ?>
+			<span class="count"><?php echo count( $seenList ); ?></span>
+		<?php endif; ?>
 	</h2>
+
 	<ul class="seen-items">
-<?php	foreach( $seenList as $seen ) : ?>
-		<li class="seen-item">
-<?php		echo $seen; ?>
-		</li>
-<?php	endforeach; ?>
+		<?php foreach( $seenList as $seen ) : ?>
+			<li class="seen-item">
+				<?php echo $seen; ?>
+			</li>
+		<?php endforeach; ?>
 	</ul>
-<?php echo $this->seenBody; ?>
+
 </section>
 <?php $this->block()->stop(); ?>
 <?php echo $this->block()->get( 'catalog/session/seen' ); ?>

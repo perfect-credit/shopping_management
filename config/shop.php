@@ -3,11 +3,11 @@
 return array(
 
 	'routes' => array(
-		// 'login' => array('middleware' => ['web']),
-		// 'admin' => array('middleware' => ['web', 'auth']),
-		// 'account' => array('middleware' => ['web', 'auth']),
-		// 'default' => array('middleware' => ['web']),
-		// 'confirm' => array('middleware' => ['web']),
+		 'login' => array('middleware' => ['web']),
+		 'admin' => array('middleware' => ['web', 'auth']),
+		 'account' => array('middleware' => ['web', 'auth']),
+		 'default' => array('middleware' => ['web']),
+		 'confirm' => array('middleware' => ['web']),
 		// 'update' => array(),
 	),
 
@@ -59,27 +59,23 @@ return array(
 	),
 
 	'madmin' => array(
+        'cache' => array(
+            'manager' => array(
+                'name' => 'None',
+            ),
+        ),
 	),
 
 	'mshop' => array(
 	),
 
 
+	'command' => array(
+	),
+
 	'frontend' => array(
-		'admin' => array(),
-		'client' => array(),
-		'controller' => array(),
-		'i18n' => array(),
-		'madmin' => array(),
-		'mshop' => array(),
 	),
 
 	'backend' => array(
-		'admin' => array(),
-		'client' => array(),
-		'controller' => array(),
-		'i18n' => array(),
-		'madmin' => array(),
-		'mshop' => array(),
 	),
 );

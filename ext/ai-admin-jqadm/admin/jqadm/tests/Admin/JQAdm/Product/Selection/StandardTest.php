@@ -2,7 +2,7 @@
 
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
- * @copyright Aimeos (aimeos.org), 2015
+ * @copyright Aimeos (aimeos.org), 2015-2016
  */
 
 
@@ -130,7 +130,7 @@ class StandardTest extends \PHPUnit_Framework_TestCase
 		$variants = $item->getListItems( 'product', 'default' );
 
 		if( empty( $variants ) ) {
-			throw new \Exception( 'No variant products available' );
+			throw new \RuntimeException( 'No variant products available' );
 		}
 
 		$variant = $manager->getItem( reset( $variants )->getRefId(), array( 'attribute' ) );
@@ -156,7 +156,7 @@ class StandardTest extends \PHPUnit_Framework_TestCase
 			->getMock();
 
 		$object->expects( $this->once() )->method( 'updateItems' )
-			->will( $this->throwException( new \Exception() ) );
+			->will( $this->throwException( new \RuntimeException() ) );
 
 		$object->setView( \TestHelperJqadm::getView() );
 

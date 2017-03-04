@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: aimeos-core\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-07-16 23:34+0200\n"
-"PO-Revision-Date: 2016-07-16 21:36+0000\n"
+"POT-Creation-Date: 2017-01-03 12:08+0100\n"
+"PO-Revision-Date: 2017-01-03 11:21+0000\n"
 "Last-Translator: Aimeos <aimeos@aimeos.org>\n"
 "Language-Team: Turkish (http://www.transifex.com/aimeos/aimeos-core/language/tr/)\n"
 "MIME-Version: 1.0\n"
@@ -61,6 +61,12 @@ msgstr "Mevcut tüm ürünleri dışa aktarır"
 msgid "Imports new and updates existing products from CSV files"
 msgstr "CSV dosyasından yeni ürün içe aktarır veya mevcut ürünleri günceller"
 
+msgid "Index optimization"
+msgstr "Dizin optimizasyonu"
+
+msgid "Index rebuild"
+msgstr "Dizin yeniden oluşturma"
+
 #, php-format
 msgid "Invalid characters in class name \"%1$s\""
 msgstr "\"%1$s\" class adında geçersiz karakterler"
@@ -79,6 +85,9 @@ msgstr "CSV mapping'de \"product.code\" sütunu bulunamadı"
 msgid "Optimizes the catalog index for searching products"
 msgstr "Arama ürünleri için katalog dizinini optimize eder"
 
+msgid "Optimizes the index for searching products faster"
+msgstr "Ürünleri daha hızlı aramak için dizini optimize eder"
+
 msgid "Process order delivery services"
 msgstr "Sipariş dağıtım hizmetlerini işleme tabi tut"
 
@@ -96,6 +105,9 @@ msgstr "Beraber satın alınan ürünler"
 
 msgid "Rebuilds the catalog index for searching products"
 msgstr "Arama ürünleri için katalog dizinini yeniden oluşturur"
+
+msgid "Rebuilds the index for searching products"
+msgstr "Ürünleri aramak için dizini yeniden oluşturur"
 
 msgid "Removes the expired entries from the cache"
 msgstr "Süresi dolan girişleri önbellekten kaldırır"

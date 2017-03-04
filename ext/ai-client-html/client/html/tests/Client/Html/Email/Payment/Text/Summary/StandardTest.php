@@ -1,13 +1,15 @@
 <?php
 
+/**
+ * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
+ * @copyright Metaways Infosystems GmbH, 2013
+ * @copyright Aimeos (aimeos.org), 2015-2016
+ */
+
+
 namespace Aimeos\Client\Html\Email\Payment\Text\Summary;
 
 
-/**
- * @copyright Metaways Infosystems GmbH, 2013
- * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
- * @copyright Aimeos (aimeos.org), 2015
- */
 class StandardTest extends \PHPUnit_Framework_TestCase
 {
 	private static $orderItem;
@@ -27,19 +29,13 @@ class StandardTest extends \PHPUnit_Framework_TestCase
 		$result = $orderManager->searchItems( $search );
 
 		if( ( self::$orderItem = reset( $result ) ) === false ) {
-			throw new \Exception( 'No order found' );
+			throw new \RuntimeException( 'No order found' );
 		}
 
 		self::$orderBaseItem = $orderBaseManager->load( self::$orderItem->getBaseId() );
 	}
 
 
-	/**
-	 * Sets up the fixture, for example, opens a network connection.
-	 * This method is called before a test is executed.
-	 *
-	 * @access protected
-	 */
 	protected function setUp()
 	{
 		$this->context = \TestHelperHtml::getContext();
@@ -57,28 +53,26 @@ class StandardTest extends \PHPUnit_Framework_TestCase
 	}
 
 
-	/**
-	 * Tears down the fixture, for example, closes a network connection.
-	 * This method is called after a test is executed.
-	 *
-	 * @access protected
-	 */
 	protected function tearDown()
 	{
 		unset( $this->object );
 	}
 
 
-	public function testGetHeader()
-	{
-		$output = $this->object->getHeader();
-		$this->assertNotNull( $output );
-	}
-
-
 	public function testGetBody()
 	{
-		$this->object->getBody();
+		$output = $this->object->getBody();
+
+		$this->assertContains( 'Billing address', $output );
+		$this->assertContains( 'Delivery address', $output );
+
+		$this->assertContains( 'delivery', $output );
+		$this->assertContains( 'payment', $output );
+
+		$this->assertContains( 'Coupons', $output );
+		$this->assertContains( 'Your comment', $output );
+
+		$this->assertContains( 'Order details', $output );
 	}
 
 

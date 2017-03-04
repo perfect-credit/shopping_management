@@ -2,7 +2,7 @@
 
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
- * @copyright Aimeos (aimeos.org), 2015
+ * @copyright Aimeos (aimeos.org), 2015-2016
  * @package Client
  * @subpackage Html
  */
@@ -18,7 +18,7 @@ namespace Aimeos\Client\Html\Checkout\Confirm\Order;
  * @subpackage Html
  */
 class Standard
-	extends \Aimeos\Client\Html\Common\Client\Factory\Base
+	extends \Aimeos\Client\Html\Common\Client\Summary\Base
 	implements \Aimeos\Client\Html\Common\Client\Factory\Iface
 {
 	/** client/html/checkout/confirm/order/standard/subparts
@@ -55,52 +55,7 @@ class Standard
 	 * @category Developer
 	 */
 	private $subPartPath = 'client/html/checkout/confirm/order/standard/subparts';
-
-	/** client/html/checkout/confirm/order/address/name
-	 * Name of the address part used by the checkout confirm order client implementation
-	 *
-	 * Use "Myname" if your class is named "\Aimeos\Client\Html\Checkout\Confirm\Details\Address\Myname".
-	 * The name is case-sensitive and you should avoid camel case names like "MyName".
-	 *
-	 * @param string Last part of the client class name
-	 * @since 2015.02
-	 * @category Developer
-	 */
-
-	/** client/html/checkout/confirm/order/service/name
-	 * Name of the service part used by the checkout confirm order client implementation
-	 *
-	 * Use "Myname" if your class is named "\Aimeos\Client\Html\Checkout\Confirm\Details\Service\Myname".
-	 * The name is case-sensitive and you should avoid camel case names like "MyName".
-	 *
-	 * @param string Last part of the client class name
-	 * @since 2015.02
-	 * @category Developer
-	 */
-
-	/** client/html/checkout/confirm/order/coupon/name
-	 * Name of the coupon part used by the checkout confirm order client implementation
-	 *
-	 * Use "Myname" if your class is named "\Aimeos\Client\Html\Checkout\Confirm\Details\Coupon\Myname".
-	 * The name is case-sensitive and you should avoid camel case names like "MyName".
-	 *
-	 * @param string Last part of the client class name
-	 * @since 2014.05
-	 * @category Developer
-	 */
-
-	/** client/html/checkout/confirm/order/detail/name
-	 * Name of the detail part used by the checkout confirm order client implementation
-	 *
-	 * Use "Myname" if your class is named "\Aimeos\Client\Html\Checkout\Confirm\Details\Detail\Myname".
-	 * The name is case-sensitive and you should avoid camel case names like "MyName".
-	 *
-	 * @param string Last part of the client class name
-	 * @since 2015.02
-	 * @category Developer
-	 */
-	private $subPartNames = array( 'address', 'service', 'coupon', 'detail' );
-
+	private $subPartNames = array();
 	private $cache;
 
 
@@ -145,53 +100,6 @@ class Standard
 		 */
 		$tplconf = 'client/html/checkout/confirm/order/standard/template-body';
 		$default = 'checkout/confirm/order-body-default.php';
-
-		return $view->render( $view->config( $tplconf, $default ) );
-	}
-
-
-	/**
-	 * Returns the HTML string for insertion into the header.
-	 *
-	 * @param string $uid Unique identifier for the output if the content is placed more than once on the same page
-	 * @param array &$tags Result array for the list of tags that are associated to the output
-	 * @param string|null &$expire Result variable for the expiration date of the output (null for no expiry)
-	 * @return string|null String including HTML tags for the header on error
-	 */
-	public function getHeader( $uid = '', array &$tags = array(), &$expire = null )
-	{
-		$view = $this->getView();
-		$view = $this->setViewParams( $view, $tags, $expire );
-
-		$html = '';
-		foreach( $this->getSubClients() as $subclient ) {
-			$html .= $subclient->setView( $view )->getHeader( $uid, $tags, $expire );
-		}
-		$view->orderHeader = $html;
-
-		/** client/html/checkout/confirm/order/standard/template-header
-		 * Relative path to the HTML header template of the checkout confirm order client.
-		 *
-		 * The template file contains the HTML code and processing instructions
-		 * to generate the HTML code that is inserted into the HTML page header
-		 * of the rendered page in the frontend. The configuration string is the
-		 * path to the template file relative to the templates directory (usually
-		 * in client/html/templates).
-		 *
-		 * You can overwrite the template file configuration in extensions and
-		 * provide alternative templates. These alternative templates should be
-		 * named like the default one but with the string "standard" replaced by
-		 * an unique name. You may use the name of your project for this. If
-		 * you've implemented an alternative client class as well, "standard"
-		 * should be replaced by the name of the new class.
-		 *
-		 * @param string Relative path to the template creating code for the HTML page head
-		 * @since 2015.02
-		 * @category Developer
-		 * @see client/html/checkout/confirm/order/standard/template-body
-		 */
-		$tplconf = 'client/html/checkout/confirm/order/standard/template-header';
-		$default = 'checkout/confirm/order-header-default.php';
 
 		return $view->render( $view->config( $tplconf, $default ) );
 	}
@@ -312,7 +220,12 @@ class Standard
 				$context = $this->getContext();
 				$manager = \Aimeos\MShop\Factory::createManager( $context, 'order/base' );
 
+				if( $view->confirmOrderItem->getPaymentStatus() >= $this->getDownloadPaymentStatus() ) {
+					$view->summaryShowDownloadAttributes = true;
+				}
+
 				$view->summaryBasket = $manager->load( $view->confirmOrderItem->getBaseId() );
+				$view->summaryTaxRates = $this->getTaxRates( $view->summaryBasket );
 			}
 
 			$this->cache = $view;

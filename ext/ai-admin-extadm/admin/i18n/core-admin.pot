@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-07-16 23:34+0200\n"
+"POT-Creation-Date: 2017-01-03 12:08+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -462,6 +462,12 @@ msgstr "Last name (required)"
 msgid "Lastname"
 msgstr "Lastname"
 
+msgid "Latitude"
+msgstr ""
+
+msgid "Latitude, e.g. 50.000000"
+msgstr ""
+
 msgid "Length"
 msgstr ""
 
@@ -532,6 +538,12 @@ msgid "Logs"
 msgstr "Logs"
 
 msgid "Long description"
+msgstr ""
+
+msgid "Longitude"
+msgstr ""
+
+msgid "Longitude, e.g. 10.000000"
 msgstr ""
 
 msgid "Media"
@@ -751,6 +763,14 @@ msgstr "Product rebate"
 msgid "Product stock"
 msgstr "Product stock"
 
+msgid "Product stock type"
+msgstr ""
+
+#. : Product stock type item panel title with type label ({0}) and site code ({1)}
+#, python-brace-format
+msgid "Product stock type: {0} ({1})"
+msgstr ""
+
 msgid "Product supplier (optional)"
 msgstr "Product supplier (optional)"
 
@@ -916,6 +936,14 @@ msgstr "Stock"
 msgid "Stock level"
 msgstr "Stock level"
 
+msgid "Stock type"
+msgstr ""
+
+#. : Product stock type item panel title with type label ({0}) and site code ({1)}
+#, python-brace-format
+msgid "Stock type: {0} ({1})"
+msgstr ""
+
 msgid "Street"
 msgstr "Street"
 
@@ -1060,9 +1088,9 @@ msgstr "Verification date"
 msgid "Warehouse"
 msgstr "Warehouse"
 
-#. : Product warehouse item panel title with warehouse label ({0}) and site
+#. : Product stock type item panel title with type label ({0}) and site
 #. code ({1)}
-#. : Product warehouse item panel title with warehouse label ({0}) and site code ({1)}
+#. : Product stock type item panel title with type label ({0}) and site code ({1)}
 #, python-brace-format
 msgid "Warehouse: {0} ({1})"
 msgstr "Warehouse: {0} ({1})"

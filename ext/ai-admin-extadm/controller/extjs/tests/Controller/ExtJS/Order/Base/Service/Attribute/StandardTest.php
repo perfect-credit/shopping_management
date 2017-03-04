@@ -4,9 +4,9 @@ namespace Aimeos\Controller\ExtJS\Order\Base\Service\Attribute;
 
 
 /**
- * @copyright Metaways Infosystems GmbH, 2011
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
- * @copyright Aimeos (aimeos.org), 2015
+ * @copyright Metaways Infosystems GmbH, 2011
+ * @copyright Aimeos (aimeos.org), 2015-2016
  */
 class StandardTest extends \PHPUnit_Framework_TestCase
 {
@@ -69,7 +69,7 @@ class StandardTest extends \PHPUnit_Framework_TestCase
 		$search->setConditions( $search->compare( '==', 'order.base.service.code', 'OGONE' ) );
 		$results = $serviceManager->searchItems( $search );
 		if( ( $expected = reset( $results ) ) === false ) {
-			throw new \Exception( 'No service item found' );
+			throw new \RuntimeException( 'No service item found' );
 		}
 
 		$saveParams = (object) array(

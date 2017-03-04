@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @copyright Metaways Infosystems GmbH, 2013
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
- * @copyright Aimeos (aimeos.org), 2015
+ * @copyright Metaways Infosystems GmbH, 2013
+ * @copyright Aimeos (aimeos.org), 2015-2016
  * @package Client
  * @subpackage Html
  */
@@ -57,28 +57,6 @@ class Standard
 	 */
 	private $subPartPath = 'client/html/catalog/stage/standard/subparts';
 
-	/** client/html/catalog/stage/image/name
-	 * Name of the image part used by the catalog stage client implementation
-	 *
-	 * Use "Myname" if your class is named "\Aimeos\Client\Html\Catalog\Stage\Image\Myname".
-	 * The name is case-sensitive and you should avoid camel case names like "MyName".
-	 *
-	 * @param string Last part of the client class name
-	 * @since 2014.03
-	 * @category Developer
-	 */
-
-	/** client/html/catalog/stage/breadcrumb/name
-	 * Name of the breadcrumb part used by the catalog stage client implementation
-	 *
-	 * Use "Myname" if your class is named "\Aimeos\Client\Html\Catalog\Stage\Breadcrumb\Myname".
-	 * The name is case-sensitive and you should avoid camel case names like "MyName".
-	 *
-	 * @param string Last part of the client class name
-	 * @since 2014.03
-	 * @category Developer
-	 */
-
 	/** client/html/catalog/stage/navigator/name
 	 * Name of the navigator part used by the catalog stage client implementation
 	 *
@@ -89,7 +67,7 @@ class Standard
 	 * @since 2014.09
 	 * @category Developer
 	 */
-	private $subPartNames = array( 'image', 'breadcrumb', 'navigator' );
+	private $subPartNames = array( 'navigator' );
 
 	private $tags = array();
 	private $expire;
@@ -121,7 +99,7 @@ class Standard
 		 */
 		$confkey = 'client/html/catalog/stage';
 
-		if( $context->getUserId() != null || ( $html = $this->getCached( 'body', $uid, $prefixes, $confkey ) ) === null )
+		if( ( $html = $this->getCached( 'body', $uid, $prefixes, $confkey ) ) === null )
 		{
 			$view = $this->getView();
 
@@ -208,7 +186,7 @@ class Standard
 		$context = $this->getContext();
 		$confkey = 'client/html/catalog/stage';
 
-		if( $context->getUserId() != null || ( $html = $this->getCached( 'header', $uid, $prefixes, $confkey ) ) === null )
+		if( ( $html = $this->getCached( 'header', $uid, $prefixes, $confkey ) ) === null )
 		{
 			$view = $this->getView();
 
@@ -399,7 +377,7 @@ class Standard
 	 */
 	protected function getClientParams( array $params, array $prefixes = array( 'f', 'l', 'd', 'a' ) )
 	{
-		if( isset( $params['l_pos'] ) && isset( $params['d_prodid'] ) )
+		if( isset( $params['d_pos'] ) && isset( $params['d_prodid'] ) )
 		{
 			$context = $this->getContext();
 			$site = $context->getLocale()->getSite()->getCode();
@@ -434,7 +412,6 @@ class Standard
 		if( !isset( $this->cache ) )
 		{
 			$params = $this->getClientParams( $view->param(), array( 'f', 'l' ) );
-			unset( $params['l_pos'] ); // @todo Rename to d_pos
 
 			if( isset( $params['f_catid'] ) && $params['f_catid'] != '' )
 			{
@@ -479,8 +456,7 @@ class Standard
 					$view->stageCurrentCatItem = $categoryItem;
 				}
 
-				$this->addMetaItem( $stageCatPath, 'catalog', $this->expire, $this->tags );
-				$this->addMetaList( array_keys( $stageCatPath ), 'catalog', $this->expire );
+				$this->addMetaItems( $stageCatPath, $this->expire, $this->tags );
 
 				$view->stageCatPath = $stageCatPath;
 			}

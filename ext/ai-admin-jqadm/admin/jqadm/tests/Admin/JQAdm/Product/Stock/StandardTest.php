@@ -2,7 +2,7 @@
 
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
- * @copyright Aimeos (aimeos.org), 2015
+ * @copyright Aimeos (aimeos.org), 2015-2016
  */
 
 
@@ -72,7 +72,7 @@ class StandardTest extends \PHPUnit_Framework_TestCase
 	public function testSave()
 	{
 		$manager = \Aimeos\MShop\Factory::createManager( $this->context, 'product' );
-		$whManager = \Aimeos\MShop\Factory::createManager( $this->context, 'product/stock/warehouse' );
+		$typeManager = \Aimeos\MShop\Factory::createManager( $this->context, 'stock/type' );
 
 		$item = $manager->findItem( 'CNC' );
 		$item->setCode( 'jqadm-test-stock' );
@@ -83,10 +83,10 @@ class StandardTest extends \PHPUnit_Framework_TestCase
 
 		$param = array(
 			'stock' => array(
-				'product.stock.id' => array( '' ),
-				'product.stock.warehouseid' => array( $whManager->findItem( 'default' )->getId() ),
-				'product.stock.dateback' => array( '2000-01-01 00:00:00' ),
-				'product.stock.stocklevel' => array( '-1' ),
+				'stock.id' => array( '' ),
+				'stock.typeid' => array( $typeManager->findItem( 'default' )->getId() ),
+				'stock.dateback' => array( '2000-01-01 00:00:00' ),
+				'stock.stocklevel' => array( '-1' ),
 			),
 		);
 
@@ -111,7 +111,7 @@ class StandardTest extends \PHPUnit_Framework_TestCase
 			->getMock();
 
 		$object->expects( $this->once() )->method( 'updateItems' )
-			->will( $this->throwException( new \Exception() ) );
+			->will( $this->throwException( new \RuntimeException() ) );
 
 		$object->setView( \TestHelperJqadm::getView() );
 
