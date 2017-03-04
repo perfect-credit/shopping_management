@@ -2,7 +2,7 @@
 
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
- * @copyright Aimeos (aimeos.org), 2015
+ * @copyright Aimeos (aimeos.org), 2015-2016
  * @package MShop
  * @subpackage Customer
  */
@@ -166,6 +166,20 @@ class Laravel
 			'label' => 'Customer website',
 			'code' => 'customer.website',
 			'internalcode' => 'lvu."website"',
+			'type' => 'string',
+			'internaltype' => \Aimeos\MW\DB\Statement\Base::PARAM_STR,
+		),
+		'customer.longitude' => array(
+			'label' => 'Customer longitude',
+			'code' => 'customer.longitude',
+			'internalcode' => 'lvu."longitude"',
+			'type' => 'string',
+			'internaltype' => \Aimeos\MW\DB\Statement\Base::PARAM_STR,
+		),
+		'customer.latitude' => array(
+			'label' => 'Customer latitude',
+			'code' => 'customer.latitude',
+			'internalcode' => 'lvu."latitude"',
 			'type' => 'string',
 			'internaltype' => \Aimeos\MW\DB\Statement\Base::PARAM_STR,
 		),
@@ -383,19 +397,21 @@ class Laravel
 			$stmt->bind( 17, $billingAddress->getTelefax() );
 			$stmt->bind( 18, $billingAddress->getWebsite() );
 			$stmt->bind( 19, $billingAddress->getEmail() );
-			$stmt->bind( 20, $item->getLabel() );
-			$stmt->bind( 21, $item->getBirthday() );
-			$stmt->bind( 22, $item->getStatus(), \Aimeos\MW\DB\Statement\Base::PARAM_INT );
-			$stmt->bind( 23, $item->getDateVerified() );
-			$stmt->bind( 24, $item->getPassword() );
-			$stmt->bind( 25, $date ); // Modification time
-			$stmt->bind( 26, $context->getEditor() );
+			$stmt->bind( 20, $billingAddress->getLongitude() );
+			$stmt->bind( 21, $billingAddress->getLatitude() );
+			$stmt->bind( 22, $item->getLabel() );
+			$stmt->bind( 23, $item->getBirthday() );
+			$stmt->bind( 24, $item->getStatus(), \Aimeos\MW\DB\Statement\Base::PARAM_INT );
+			$stmt->bind( 25, $item->getDateVerified() );
+			$stmt->bind( 26, $item->getPassword() );
+			$stmt->bind( 27, $date ); // Modification time
+			$stmt->bind( 28, $context->getEditor() );
 
 			if( $id !== null ) {
-				$stmt->bind( 27, $id, \Aimeos\MW\DB\Statement\Base::PARAM_INT );
+				$stmt->bind( 29, $id, \Aimeos\MW\DB\Statement\Base::PARAM_INT );
 				$item->setId( $id );
 			} else {
-				$stmt->bind( 27, $date ); // Creation time
+				$stmt->bind( 29, $date ); // Creation time
 			}
 
 			$stmt->execute()->finish();

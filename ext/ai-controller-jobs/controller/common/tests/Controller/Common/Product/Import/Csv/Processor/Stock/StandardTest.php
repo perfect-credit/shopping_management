@@ -1,12 +1,14 @@
 <?php
 
+/**
+ * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
+ * @copyright Aimeos (aimeos.org), 2015-2016
+ */
+
+
 namespace Aimeos\Controller\Common\Product\Import\Csv\Processor\Stock;
 
 
-/**
- * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
- * @copyright Aimeos (aimeos.org), 2015
- */
 class StandardTest extends \PHPUnit_Framework_TestCase
 {
 	private $context;
@@ -32,8 +34,8 @@ class StandardTest extends \PHPUnit_Framework_TestCase
 	public function testProcess()
 	{
 		$mapping = array(
-			0 => 'product.stock.stocklevel',
-			1 => 'product.stock.dateback',
+			0 => 'stock.stocklevel',
+			1 => 'stock.dateback',
 		);
 
 		$data = array(
@@ -46,7 +48,7 @@ class StandardTest extends \PHPUnit_Framework_TestCase
 		$object = new \Aimeos\Controller\Common\Product\Import\Csv\Processor\Stock\Standard( $this->context, $mapping, $this->endpoint );
 		$object->process( $product, $data );
 
-		$items = $this->getStockItems( $product->getId() );
+		$items = $this->getStockItems( $product->getCode() );
 		$this->delete( $product );
 
 
@@ -63,16 +65,16 @@ class StandardTest extends \PHPUnit_Framework_TestCase
 	public function testProcessMultiple()
 	{
 		$mapping = array(
-			0 => 'product.stock.warehouse',
-			1 => 'product.stock.stocklevel',
-			2 => 'product.stock.warehouse',
-			3 => 'product.stock.stocklevel',
+			0 => 'stock.type',
+			1 => 'stock.stocklevel',
+			2 => 'stock.type',
+			3 => 'stock.stocklevel',
 		);
 
 		$data = array(
-			0 => 'unit_warehouse1',
+			0 => 'unit_type1',
 			1 => '200',
-			2 => 'unit_warehouse2',
+			2 => 'unit_type2',
 			3 => '200',
 		);
 
@@ -81,7 +83,7 @@ class StandardTest extends \PHPUnit_Framework_TestCase
 		$object = new \Aimeos\Controller\Common\Product\Import\Csv\Processor\Stock\Standard( $this->context, $mapping, $this->endpoint );
 		$object->process( $product, $data );
 
-		$items = $this->getStockItems( $product->getId() );
+		$items = $this->getStockItems( $product->getCode() );
 		$this->delete( $product );
 
 
@@ -96,7 +98,7 @@ class StandardTest extends \PHPUnit_Framework_TestCase
 	public function testProcessUpdate()
 	{
 		$mapping = array(
-			0 => 'product.stock.stocklevel',
+			0 => 'stock.stocklevel',
 		);
 
 		$data = array(
@@ -114,7 +116,7 @@ class StandardTest extends \PHPUnit_Framework_TestCase
 		$object->process( $product, $data );
 		$object->process( $product, $dataUpdate );
 
-		$items = $this->getStockItems( $product->getId() );
+		$items = $this->getStockItems( $product->getCode() );
 		$this->delete( $product );
 
 
@@ -128,7 +130,7 @@ class StandardTest extends \PHPUnit_Framework_TestCase
 	public function testProcessDelete()
 	{
 		$mapping = array(
-			0 => 'product.stock.stocklevel',
+			0 => 'stock.stocklevel',
 		);
 
 		$data = array(
@@ -143,7 +145,7 @@ class StandardTest extends \PHPUnit_Framework_TestCase
 		$object = new \Aimeos\Controller\Common\Product\Import\Csv\Processor\Stock\Standard( $this->context, array(), $this->endpoint );
 		$object->process( $product, array() );
 
-		$items = $this->getStockItems( $product->getId() );
+		$items = $this->getStockItems( $product->getCode() );
 		$this->delete( $product );
 
 
@@ -154,13 +156,13 @@ class StandardTest extends \PHPUnit_Framework_TestCase
 	public function testProcessEmpty()
 	{
 		$mapping = array(
-			0 => 'product.stock.warehouse',
-			1 => 'product.stock.stocklevel',
-			2 => 'product.stock.dateback',
+			0 => 'stock.type',
+			1 => 'stock.stocklevel',
+			2 => 'stock.dateback',
 		);
 
 		$data = array(
-			0 => 'unit_warehouse1',
+			0 => 'unit_type1',
 			1 => '',
 			2 => '',
 		);
@@ -170,7 +172,7 @@ class StandardTest extends \PHPUnit_Framework_TestCase
 		$object = new \Aimeos\Controller\Common\Product\Import\Csv\Processor\Stock\Standard( $this->context, $mapping, $this->endpoint );
 		$object->process( $product, $data );
 
-		$items = $this->getStockItems( $product->getId() );
+		$items = $this->getStockItems( $product->getCode() );
 		$this->delete( $product );
 
 		$this->assertEquals( 1, count( $items ) );
@@ -192,11 +194,11 @@ class StandardTest extends \PHPUnit_Framework_TestCase
 		$typeManager = $manager->getSubManager( 'type' );
 
 		$typeSearch = $typeManager->createSearch();
-		$typeSearch->setConditions( $typeSearch->compare( '==', 'product.type.code', 'default' ) );
+		$typeSearch->setConditions( $typeSearch->compare( '==', 'type.code', 'default' ) );
 		$typeResult = $typeManager->searchItems( $typeSearch );
 
 		if( ( $typeItem = reset( $typeResult ) ) === false ) {
-			throw new \Exception( 'No product type "default" found' );
+			throw new \RuntimeException( 'No product type "default" found' );
 		}
 
 		$item = $manager->createItem();
@@ -216,12 +218,12 @@ class StandardTest extends \PHPUnit_Framework_TestCase
 	}
 
 
-	protected function getStockItems( $prodid )
+	protected function getStockItems( $code )
 	{
-		$manager = \Aimeos\MShop\Factory::createManager( $this->context, 'product/stock' );
+		$manager = \Aimeos\MShop\Factory::createManager( $this->context, 'stock' );
 
 		$search = $manager->createSearch();
-		$search->setConditions( $search->compare( '==', 'product.stock.parentid', $prodid ) );
+		$search->setConditions( $search->compare( '==', 'stock.prodcode', $code ) );
 
 		return $manager->searchItems( $search );
 	}

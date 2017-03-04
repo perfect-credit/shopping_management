@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @copyright Metaways Infosystems GmbH, 2013
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
- * @copyright Aimeos (aimeos.org), 2015
+ * @copyright Metaways Infosystems GmbH, 2013
+ * @copyright Aimeos (aimeos.org), 2015-2016
  * @package Client
  * @subpackage Html
  */
@@ -19,7 +19,7 @@ namespace Aimeos\Client\Html\Catalog\Lists\Promo;
  * @subpackage Html
  */
 class Standard
-	extends \Aimeos\Client\Html\Common\Client\Factory\Base
+	extends \Aimeos\Client\Html\Catalog\Base
 	implements \Aimeos\Client\Html\Common\Client\Factory\Iface
 {
 	/** client/html/catalog/lists/promo/standard/subparts
@@ -328,29 +328,16 @@ class Standard
 				$controller = \Aimeos\Controller\Frontend\Factory::createController( $context, 'catalog' );
 				$filter = $controller->createIndexFilterCategory( $catId, 'relevance', '+', 0, $size, 'promotion' );
 				$products = $controller->getIndexItems( $filter, $domains, $total );
+
+				$this->addMetaItems( $products, $this->expire, $this->tags );
+
+
+				if( !empty( $products ) && (bool) $config->get( 'client/html/catalog/lists/stock/enable', true ) == true ) {
+					$view->promoProductCodes = $this->getProductCodes( $products );
+				}
+
+				$view->promoItems = $products;
 			}
-
-
-			if( !empty( $products ) && $config->get( 'client/html/catalog/lists/stock/enable', true ) === true )
-			{
-				$stockTarget = $config->get( 'client/html/catalog/stock/url/target' );
-				$stockController = $config->get( 'client/html/catalog/stock/url/controller', 'catalog' );
-				$stockAction = $config->get( 'client/html/catalog/stock/url/action', 'stock' );
-				$stockConfig = $config->get( 'client/html/catalog/stock/url/config', array() );
-
-				$productIds = array_keys( $products );
-				sort( $productIds );
-
-				$params = array( 's_prodid' => implode( ' ', $productIds ) );
-				$view->promoStockUrl = $view->url( $stockTarget, $stockController, $stockAction, $params, array(), $stockConfig );
-			}
-
-
-			$this->addMetaItem( $products, 'product', $this->expire, $this->tags );
-			$this->addMetaList( array_keys( $products ), 'product', $this->expire );
-
-
-			$view->promoItems = $products;
 
 			$this->cache = $view;
 		}

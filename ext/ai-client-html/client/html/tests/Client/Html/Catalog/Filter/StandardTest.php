@@ -4,9 +4,9 @@ namespace Aimeos\Client\Html\Catalog\Filter;
 
 
 /**
- * @copyright Metaways Infosystems GmbH, 2012
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
- * @copyright Aimeos (aimeos.org), 2015
+ * @copyright Metaways Infosystems GmbH, 2012
+ * @copyright Aimeos (aimeos.org), 2015-2016
  */
 class StandardTest extends \PHPUnit_Framework_TestCase
 {
@@ -37,8 +37,6 @@ class StandardTest extends \PHPUnit_Framework_TestCase
 		$output = $this->object->getHeader( 1, $tags, $expire );
 
 		$this->assertNotNull( $output );
-		$this->assertEquals( '2022-01-01 00:00:00', $expire );
-		$this->assertEquals( 5, count( $tags ) );
 	}
 
 
@@ -57,7 +55,7 @@ class StandardTest extends \PHPUnit_Framework_TestCase
 
 		$this->assertStringStartsWith( '<section class="aimeos catalog-filter">', $output );
 		$this->assertEquals( '2022-01-01 00:00:00', $expire );
-		$this->assertEquals( 5, count( $tags ) );
+		$this->assertEquals( 3, count( $tags ) );
 	}
 
 
@@ -117,7 +115,7 @@ class StandardTest extends \PHPUnit_Framework_TestCase
 			->getMock();
 
 		$object->expects( $this->once() )->method( 'setViewParams' )
-			->will( $this->throwException( new \Exception( 'test exception' ) ) );
+			->will( $this->throwException( new \RuntimeException( 'test exception' ) ) );
 
 		$object->setView( \TestHelperHtml::getView() );
 

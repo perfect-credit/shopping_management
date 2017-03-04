@@ -1,24 +1,20 @@
 <?php
 
+/**
+ * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
+ * @copyright Aimeos (aimeos.org), 2015-2016
+ */
+
+
 namespace Aimeos\Client\Html\Checkout\Confirm\Order;
 
 
-/**
- * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
- * @copyright Aimeos (aimeos.org), 2015
- */
 class StandardTest extends \PHPUnit_Framework_TestCase
 {
 	private $object;
 	private $context;
 
 
-	/**
-	 * Sets up the fixture, for example, opens a network connection.
-	 * This method is called before a test is executed.
-	 *
-	 * @access protected
-	 */
 	protected function setUp()
 	{
 		$this->context = clone \TestHelperHtml::getContext();
@@ -29,26 +25,9 @@ class StandardTest extends \PHPUnit_Framework_TestCase
 	}
 
 
-	/**
-	 * Tears down the fixture, for example, closes a network connection.
-	 * This method is called after a test is executed.
-	 *
-	 * @access protected
-	 */
 	protected function tearDown()
 	{
 		unset( $this->object );
-	}
-
-
-	public function testGetHeader()
-	{
-		$view = $this->object->getView();
-		$customer = $this->getCustomerItem( 'UTC001' );
-		$view->confirmOrderItem = $this->getOrderItem( $customer->getId() );
-
-		$output = $this->object->getHeader();
-		$this->assertNotNull( $output );
 	}
 
 
@@ -89,7 +68,7 @@ class StandardTest extends \PHPUnit_Framework_TestCase
 		$items = $manager->searchItems( $search );
 
 		if( ( $item = reset( $items ) ) === false ) {
-			throw new \Exception( sprintf( 'No customer item with code "%1$s" found', $code ) );
+			throw new \RuntimeException( sprintf( 'No customer item with code "%1$s" found', $code ) );
 		}
 
 		return $item;
@@ -110,7 +89,7 @@ class StandardTest extends \PHPUnit_Framework_TestCase
 		$items = $manager->searchItems( $search );
 
 		if( ( $item = reset( $items ) ) === false ) {
-			throw new \Exception( sprintf( 'No order item for customer with ID "%1$s" found', $customerid ) );
+			throw new \RuntimeException( sprintf( 'No order item for customer with ID "%1$s" found', $customerid ) );
 		}
 
 		return $item;

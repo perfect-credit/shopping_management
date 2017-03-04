@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @copyright Metaways Infosystems GmbH, 2012
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
- * @copyright Aimeos (aimeos.org), 2015
+ * @copyright Metaways Infosystems GmbH, 2012
+ * @copyright Aimeos (aimeos.org), 2015-2016
  * @package Client
  * @subpackage Html
  */
@@ -19,7 +19,7 @@ namespace Aimeos\Client\Html\Catalog\Detail;
  * @subpackage Html
  */
 class Standard
-	extends \Aimeos\Client\Html\Common\Client\Factory\Base
+	extends \Aimeos\Client\Html\Catalog\Base
 	implements \Aimeos\Client\Html\Common\Client\Factory\Iface
 {
 	/** client/html/catalog/detail/standard/subparts
@@ -57,39 +57,6 @@ class Standard
 	 */
 	private $subPartPath = 'client/html/catalog/detail/standard/subparts';
 
-	/** client/html/catalog/detail/social/name
-	 * Name of the social part used by the catalog detail client implementation
-	 *
-	 * Use "Myname" if your class is named "\Aimeos\Client\Html\Catalog\Detail\Social\Myname".
-	 * The name is case-sensitive and you should avoid camel case names like "MyName".
-	 *
-	 * @param string Last part of the client class name
-	 * @since 2014.09
-	 * @category Developer
-	 */
-
-	/** client/html/catalog/detail/image/name
-	 * Name of the image part used by the catalog detail client implementation
-	 *
-	 * Use "Myname" if your class is named "\Aimeos\Client\Html\Catalog\Detail\Image\Myname".
-	 * The name is case-sensitive and you should avoid camel case names like "MyName".
-	 *
-	 * @param string Last part of the client class name
-	 * @since 2014.03
-	 * @category Developer
-	 */
-
-	/** client/html/catalog/detail/basic/name
-	 * Name of the basic part used by the catalog detail client implementation
-	 *
-	 * Use "Myname" if your class is named "\Aimeos\Client\Html\Catalog\Detail\Basic\Myname".
-	 * The name is case-sensitive and you should avoid camel case names like "MyName".
-	 *
-	 * @param string Last part of the client class name
-	 * @since 2014.03
-	 * @category Developer
-	 */
-
 	/** client/html/catalog/detail/actions/name
 	 * Name of the actions part used by the catalog detail client implementation
 	 *
@@ -101,58 +68,14 @@ class Standard
 	 * @category Developer
 	 */
 
-	/** client/html/catalog/detail/basket/name
-	 * Name of the basket part used by the catalog detail client implementation
+	/** client/html/catalog/detail/service/name
+	 * Name of the shipping cost part used by the catalog detail client implementation
 	 *
-	 * Use "Myname" if your class is named "\Aimeos\Client\Html\Catalog\Detail\Basket\Myname".
+	 * Use "Myname" if your class is named "\Aimeos\Client\Html\Catalog\Detail\Service\Myname".
 	 * The name is case-sensitive and you should avoid camel case names like "MyName".
 	 *
 	 * @param string Last part of the client class name
-	 * @since 2014.03
-	 * @category Developer
-	 */
-
-	/** client/html/catalog/detail/bundle/name
-	 * Name of the bundle part used by the catalog detail client implementation
-	 *
-	 * Use "Myname" if your class is named "\Aimeos\Client\Html\Catalog\Detail\Bundle\Myname".
-	 * The name is case-sensitive and you should avoid camel case names like "MyName".
-	 *
-	 * @param string Last part of the client class name
-	 * @since 2014.11
-	 * @category Developer
-	 */
-
-	/** client/html/catalog/detail/additional/name
-	 * Name of the additional part used by the catalog detail client implementation
-	 *
-	 * Use "Myname" if your class is named "\Aimeos\Client\Html\Catalog\Detail\Additional\Myname".
-	 * The name is case-sensitive and you should avoid camel case names like "MyName".
-	 *
-	 * @param string Last part of the client class name
-	 * @since 2014.03
-	 * @category Developer
-	 */
-
-	/** client/html/catalog/detail/suggest/name
-	 * Name of the suggest part used by the catalog detail client implementation
-	 *
-	 * Use "Myname" if your class is named "\Aimeos\Client\Html\Catalog\Detail\Suggest\Myname".
-	 * The name is case-sensitive and you should avoid camel case names like "MyName".
-	 *
-	 * @param string Last part of the client class name
-	 * @since 2014.03
-	 * @category Developer
-	 */
-
-	/** client/html/catalog/detail/bought/name
-	 * Name of the bought together part used by the catalog detail client implementation
-	 *
-	 * Use "Myname" if your class is named "\Aimeos\Client\Html\Catalog\Detail\Bought\Myname".
-	 * The name is case-sensitive and you should avoid camel case names like "MyName".
-	 *
-	 * @param string Last part of the client class name
-	 * @since 2014.09
+	 * @since 2017.01
 	 * @category Developer
 	 */
 
@@ -166,7 +89,7 @@ class Standard
 	 * @since 2014.03
 	 * @category Developer
 	 */
-	private $subPartNames = array( 'image', 'basic', 'basket', 'actions', 'social', 'bundle', 'additional', 'suggest', 'bought', 'seen' );
+	private $subPartNames = array( 'actions', 'service', 'seen' );
 
 	private $tags = array();
 	private $expire;
@@ -198,7 +121,7 @@ class Standard
 		 */
 		$confkey = 'client/html/catalog/detail';
 
-		if( $context->getUserId() != null || ( $html = $this->getCached( 'body', $uid, $prefixes, $confkey ) ) === null )
+		if( ( $html = $this->getCached( 'body', $uid, $prefixes, $confkey ) ) === null )
 		{
 			$view = $this->getView();
 
@@ -286,7 +209,7 @@ class Standard
 		$confkey = 'client/html/catalog/detail';
 
 
-		if( $context->getUserId() != null || ( $html = $this->getCached( 'header', $uid, $prefixes, $confkey ) ) === null )
+		if( ( $html = $this->getCached( 'header', $uid, $prefixes, $confkey ) ) === null )
 		{
 			$view = $this->getView();
 
@@ -431,6 +354,21 @@ class Standard
 
 
 	/**
+	 * Modifies the cached body content to replace content based on sessions or cookies.
+	 *
+	 * @param string $content Cached content
+	 * @param string $uid Unique identifier for the output if the content is placed more than once on the same page
+	 * @return string Modified body content
+	 */
+	public function modifyBody( $content, $uid )
+	{
+		$content = parent::modifyBody( $content, $uid );
+
+		return $this->replaceSection( $content, $this->getView()->csrf()->formfield(), 'catalog.detail.csrf' );
+	}
+
+
+	/**
 	 * Processes the input, e.g. store given values.
 	 * A view must be available and this method doesn't generate any output
 	 * besides setting view variables.
@@ -497,40 +435,56 @@ class Standard
 		if( !isset( $this->cache ) )
 		{
 			$context = $this->getContext();
+			$prodid = $view->param( 'd_prodid' );
+
 			$domains = array( 'media', 'price', 'text', 'attribute', 'product' );
-			$productItem = $this->getProductItem( $view->param( 'd_prodid' ), $domains );
 			$controller = \Aimeos\Controller\Frontend\Factory::createController( $context, 'catalog' );
 
 
-			$attrManager = $controller->createManager( 'attribute' );
-			$attrSearch = $attrManager->createSearch( true );
-			$expr = array(
-				$attrSearch->compare( '==', 'attribute.id', array_keys( $productItem->getRefItems( 'attribute' ) ) ),
-				$attrSearch->getConditions(),
-			);
-			$attrSearch->setConditions( $attrSearch->combine( '&&', $expr ) );
-			$attributes = $attrManager->searchItems( $attrSearch, $domains );
+			$productItem = $this->getProductItem( $prodid, $domains );
+			$this->addMetaItems( $productItem, $this->expire, $this->tags );
 
-			$this->addMetaItem( $attributes, 'attribute', $this->expire, $this->tags );
-			$this->addMetaList( array_keys( $attributes ), 'attribute', $this->expire );
+
+			$productManager = $controller->createManager( 'product' );
+			$productIds = array_keys( $productItem->getRefItems( 'product' ) );
+			$products = $this->getDomainItems( $productManager, 'product.id', $productIds, $domains );
+
+
+			$attrIds = array_keys( $productItem->getRefItems( 'attribute' ) );
+			$mediaIds = array_keys( $productItem->getRefItems( 'media' ) );
+
+			foreach( $products as $product )
+			{
+				$attrIds = array_merge( $attrIds, array_keys( $product->getRefItems( 'attribute' ) ) );
+				$mediaIds = array_merge( $mediaIds, array_keys( $product->getRefItems( 'media' ) ) );
+			}
+
+
+			$attributeManager = $controller->createManager( 'attribute' );
+			$attributeItems = $this->getDomainItems( $attributeManager, 'attribute.id', $attrIds, $domains );
+			$this->addMetaItems( $attributeItems, $this->expire, $this->tags );
 
 
 			$mediaManager = $controller->createManager( 'media' );
-			$mediaSearch = $mediaManager->createSearch( true );
-			$expr = array(
-				$mediaSearch->compare( '==', 'media.id', array_keys( $productItem->getRefItems( 'media' ) ) ),
-				$mediaSearch->getConditions(),
-			);
-			$mediaSearch->setConditions( $mediaSearch->combine( '&&', $expr ) );
-			$media = $mediaManager->searchItems( $mediaSearch, $domains );
-
-			$this->addMetaItem( $media, 'media', $this->expire, $this->tags );
-			$this->addMetaList( array_keys( $media ), 'media', $this->expire );
+			$mediaItems = $this->getDomainItems( $mediaManager, 'media.id', $mediaIds, $domains );
+			$this->addMetaItems( $mediaItems, $this->expire, $this->tags );
 
 
+			$propertyManager = $controller->createManager( 'product/property' );
+			$propertyItems = $this->getDomainItems( $propertyManager, 'product.property.parentid', $productIds, $domains );
+
+
+			$productCodes = $this->getProductCodes( $products );
+			$productCodes[] = $productItem->getCode();
+
+
+			$view->detailProductCodes = $productCodes;
 			$view->detailProductItem = $productItem;
-			$view->detailProductAttributeItems = $attributes;
-			$view->detailProductMediaItems = $media;
+			$view->detailProductItems = $products;
+			$view->detailPropertyItems = $propertyItems;
+			$view->detailAttributeItems = $attributeItems;
+			$view->detailMediaItems = $mediaItems;
+			$view->detailUserId = $context->getUserId();
 			$view->detailParams = $this->getClientParams( $view->param() );
 
 			$this->cache = $view;
@@ -611,9 +565,6 @@ class Standard
 		if( ( $item = reset( $items ) ) === false ) {
 			throw new \Aimeos\Client\Html\Exception( sprintf( 'No product with ID "%1$s" found', $prodid ) );
 		}
-
-		$this->addMetaItem( $item, 'product', $this->expire, $this->tags );
-		$this->addMetaList( $prodid, 'product', $this->expire );
 
 		return $item;
 	}

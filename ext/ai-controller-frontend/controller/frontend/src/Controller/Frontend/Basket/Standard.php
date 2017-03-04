@@ -92,12 +92,12 @@ class Standard
 	 * @param array $hiddenAttributeIds List of attribute IDs that should be stored along with the product in the order
 	 * @param array $customAttributeValues Associative list of attribute IDs and arbitrary values that should be stored
 	 * 	along with the product in the order
-	 * @param string $warehouse Unique code of the warehouse to deliver the products from
+	 * @param string $stocktype Unique code of the stock type to deliver the products from
 	 * @throws \Aimeos\Controller\Frontend\Basket\Exception If the product isn't available
 	 */
 	public function addProduct( $prodid, $quantity = 1, array $options = array(), array $variantAttributeIds = array(),
 		array $configAttributeIds = array(), array $hiddenAttributeIds = array(), array $customAttributeValues = array(),
-		$warehouse = 'default' )
+		$stocktype = 'default' )
 	{
 		$context = $this->getContext();
 
@@ -106,7 +106,7 @@ class Standard
 		$orderBaseProductItem = \Aimeos\MShop\Factory::createManager( $context, 'order/base/product' )->createItem();
 		$orderBaseProductItem->copyFrom( $productItem );
 		$orderBaseProductItem->setQuantity( $quantity );
-		$orderBaseProductItem->setWarehouseCode( $warehouse );
+		$orderBaseProductItem->setStockType( $stocktype );
 
 		$attr = array();
 		$prices = $productItem->getRefItems( 'price', 'default', 'default' );
@@ -117,7 +117,7 @@ class Standard
 				$attr = $this->getVariantDetails( $orderBaseProductItem, $productItem, $prices, $variantAttributeIds, $options );
 				break;
 			case 'bundle':
-				$this->addBundleProducts( $orderBaseProductItem, $productItem, $variantAttributeIds, $warehouse );
+				$this->addBundleProducts( $orderBaseProductItem, $productItem, $variantAttributeIds, $stocktype );
 				break;
 		}
 
@@ -134,7 +134,7 @@ class Standard
 		$orderBaseProductItem->setPrice( $price );
 		$orderBaseProductItem->setAttributes( $attr );
 
-		$this->addProductInStock( $orderBaseProductItem, $productItem->getId(), $quantity, $options, $warehouse );
+		$this->basket->addProduct( $orderBaseProductItem );
 
 		$this->domainManager->setSession( $this->basket );
 	}
@@ -173,13 +173,14 @@ class Standard
 		array $configAttributeCodes = array() )
 	{
 		$product = $this->basket->getProduct( $position );
-		$product->setQuantity( $quantity ); // Enforce check immediately
 
 		if( $product->getFlags() & \Aimeos\MShop\Order\Item\Base\Product\Base::FLAG_IMMUTABLE )
 		{
 			$msg = sprintf( 'Basket item at position "%1$d" cannot be changed', $position );
 			throw new \Aimeos\Controller\Frontend\Basket\Exception( $msg );
 		}
+
+		$product->setQuantity( $quantity );
 
 		$attributes = $product->getAttributes();
 		foreach( $attributes as $key => $attribute )
@@ -192,10 +193,10 @@ class Standard
 
 		$productItem = $this->getDomainItem( 'product', 'product.code', $product->getProductCode(), array( 'price', 'text' ) );
 		$prices = $productItem->getRefItems( 'price', 'default' );
-
 		$product->setPrice( $this->calcPrice( $product, $prices, $quantity ) );
 
-		$this->editProductInStock( $product, $productItem, $quantity, $position, $options );
+		$this->basket->deleteProduct( $position );
+		$this->basket->addProduct( $product, $position );
 
 		$this->domainManager->setSession( $this->basket );
 	}
@@ -370,10 +371,10 @@ class Standard
 	 * @param \Aimeos\MShop\Order\Item\Base\Product\Iface $orderBaseProductItem Order product item
 	 * @param \Aimeos\MShop\Product\Item\Iface $productItem Bundle product item
 	 * @param array $variantAttributeIds List of product variant attribute IDs
-	 * @param string $warehouse
+	 * @param string $stocktype
 	 */
 	protected function addBundleProducts( \Aimeos\MShop\Order\Item\Base\Product\Iface $orderBaseProductItem,
-		\Aimeos\MShop\Product\Item\Iface $productItem, array $variantAttributeIds, $warehouse )
+		\Aimeos\MShop\Product\Item\Iface $productItem, array $variantAttributeIds, $stocktype )
 	{
 		$quantity = $orderBaseProductItem->getQuantity();
 		$products = $subProductIds = $orderProducts = array();
@@ -403,58 +404,13 @@ class Standard
 
 			$orderProduct = $orderProductManager->createItem();
 			$orderProduct->copyFrom( $product );
-			$orderProduct->setWarehouseCode( $warehouse );
+			$orderProduct->setStockType( $stocktype );
 			$orderProduct->setPrice( $this->calcPrice( $orderProduct, $prices, $quantity ) );
 
 			$orderProducts[] = $orderProduct;
 		}
 
 		$orderBaseProductItem->setProducts( $orderProducts );
-	}
-
-
-	/**
-	 * Edits the changed product to the basket if it's in stock.
-	 *
-	 * @param \Aimeos\MShop\Order\Item\Base\Product\Iface $orderBaseProductItem Old order product from basket
-	 * @param string $productId Unique ID of the product item that belongs to the order product
-	 * @param integer $quantity Number of products to add to the basket
-	 * @param array $options Associative list of options
-	 * @param string $warehouse Warehouse code for retrieving the stock level
-	 * @throws \Aimeos\Controller\Frontend\Basket\Exception If there's not enough stock available
-	 */
-	protected function addProductInStock( \Aimeos\MShop\Order\Item\Base\Product\Iface $orderBaseProductItem,
-			$productId, $quantity, array $options, $warehouse )
-	{
-		$stocklevel = null;
-		if( !isset( $options['stock'] ) || $options['stock'] != false ) {
-			$stocklevel = $this->getStockLevel( $productId, $warehouse );
-		}
-
-		if( $stocklevel === null || $stocklevel > 0 )
-		{
-			$position = $this->get()->addProduct( $orderBaseProductItem );
-
-			try
-			{
-				$orderBaseProductItem = clone $this->get()->getProduct( $position );
-				$quantity = $orderBaseProductItem->getQuantity();
-
-				if( $stocklevel > 0 && $stocklevel < $quantity )
-				{
-					$this->get()->deleteProduct( $position );
-					$orderBaseProductItem->setQuantity( $stocklevel );
-					$this->get()->addProduct( $orderBaseProductItem, $position );
-				}
-			}
-			catch( \Aimeos\MShop\Order\Exception $e ) {} // hide error if product position changed by plugin
-		}
-
-		if( $stocklevel !== null && $stocklevel < $quantity )
-		{
-			$msg = $this->getContext()->getI18n()->dt( 'controller/frontend', 'There are not enough products "%1$s" in stock' );
-			throw new \Aimeos\Controller\Frontend\Basket\Exception( sprintf( $msg, $orderBaseProductItem->getName() ) );
-		}
 	}
 
 
@@ -505,40 +461,6 @@ class Standard
 		}
 
 		return $list;
-	}
-
-
-	/**
-	 * Edits the changed product to the basket if it's in stock.
-	 *
-	 * @param \Aimeos\MShop\Order\Item\Base\Product\Iface $product Old order product from basket
-	 * @param \Aimeos\MShop\Product\Item\Iface $productItem Product item that belongs to the order product
-	 * @param integer $quantity New product quantity
-	 * @param integer $position Position of the old order product in the basket
-	 * @param array Associative list of options
-	 * @throws \Aimeos\Controller\Frontend\Basket\Exception If there's not enough stock available
-	 */
-	protected function editProductInStock( \Aimeos\MShop\Order\Item\Base\Product\Iface $product,
-			\Aimeos\MShop\Product\Item\Iface $productItem, $quantity, $position, array $options )
-	{
-		$stocklevel = null;
-		if( !isset( $options['stock'] ) || $options['stock'] != false ) {
-			$stocklevel = $this->getStockLevel( $productItem->getId(), $product->getWarehouseCode() );
-		}
-
-		$product->setQuantity( ( $stocklevel !== null && $stocklevel > 0 ? min( $stocklevel, $quantity ) : $quantity ) );
-
-		$this->get()->deleteProduct( $position );
-
-		if( $stocklevel === null || $stocklevel > 0 ) {
-			$this->get()->addProduct( $product, $position );
-		}
-
-		if( $stocklevel !== null && $stocklevel < $quantity )
-		{
-			$msg = sprintf( 'There are not enough products "%1$s" in stock', $productItem->getName() );
-			throw new \Aimeos\Controller\Frontend\Basket\Exception( $msg );
-		}
 	}
 
 
@@ -604,8 +526,14 @@ class Standard
 
 			$subprices = $productItem->getRefItems( 'price', 'default', 'default' );
 
-			if( count( $subprices ) > 0 ) {
+			if( !empty( $subprices ) ) {
 				$prices = $subprices;
+			}
+
+			$submedia = $productItem->getRefItems( 'media', 'default', 'default' );
+
+			if( ( $mediaItem = reset( $submedia ) ) !== false ) {
+				$orderBaseProductItem->setMediaUrl( $mediaItem->getPreview() );
 			}
 
 			$orderProductAttrManager = \Aimeos\MShop\Factory::createManager( $this->getContext(), 'order/base/product/attribute' );

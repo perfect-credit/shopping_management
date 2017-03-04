@@ -5,7 +5,7 @@ namespace Aimeos\Admin\JQAdm\Product;
 
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
- * @copyright Aimeos (aimeos.org), 2015
+ * @copyright Aimeos (aimeos.org), 2015-2016
  */
 class StandardTest extends \PHPUnit_Framework_TestCase
 {
@@ -49,7 +49,7 @@ class StandardTest extends \PHPUnit_Framework_TestCase
 			->getMock();
 
 		$object->expects( $this->once() )->method( 'getSubClients' )
-			->will( $this->throwException( new \Exception() ) );
+			->will( $this->throwException( new \RuntimeException() ) );
 
 		$object->setView( $this->getViewNoRender() );
 
@@ -95,7 +95,7 @@ class StandardTest extends \PHPUnit_Framework_TestCase
 			->getMock();
 
 		$object->expects( $this->once() )->method( 'getSubClients' )
-			->will( $this->throwException( new \Exception() ) );
+			->will( $this->throwException( new \RuntimeException() ) );
 
 		$object->setView( $this->getViewNoRender() );
 
@@ -133,7 +133,7 @@ class StandardTest extends \PHPUnit_Framework_TestCase
 			->getMock();
 
 		$object->expects( $this->once() )->method( 'getSubClients' )
-			->will( $this->throwException( new \Exception() ) );
+			->will( $this->throwException( new \RuntimeException() ) );
 
 		$object->setView( $this->getViewNoRender() );
 
@@ -179,7 +179,7 @@ class StandardTest extends \PHPUnit_Framework_TestCase
 			->getMock();
 
 		$object->expects( $this->once() )->method( 'getSubClients' )
-			->will( $this->throwException( new \Exception() ) );
+			->will( $this->throwException( new \RuntimeException() ) );
 
 		$object->setView( $this->getViewNoRender() );
 
@@ -222,7 +222,7 @@ class StandardTest extends \PHPUnit_Framework_TestCase
 		$typeItems = $typeManager->searchItems( $search );
 
 		if( ( $typeItem = reset( $typeItems ) ) === false ) {
-			throw new \Exception( 'No product type item found' );
+			throw new \RuntimeException( 'No product type item found' );
 		}
 
 
@@ -266,7 +266,7 @@ class StandardTest extends \PHPUnit_Framework_TestCase
 			->getMock();
 
 		$mock->expects( $this->exactly( 2 ) )->method( 'createItem' )
-			->will( $this->throwException( new \Exception() ) );
+			->will( $this->throwException( new \RuntimeException() ) );
 
 		\Aimeos\MShop\Product\Manager\Factory::injectManager( '\\Aimeos\\MShop\\Product\\Manager\\' . $name, $mock );
 
@@ -356,7 +356,7 @@ class StandardTest extends \PHPUnit_Framework_TestCase
 			->getMock();
 
 		$object->expects( $this->once() )->method( 'getSubClients' )
-			->will( $this->throwException( new \Exception() ) );
+			->will( $this->throwException( new \RuntimeException() ) );
 
 		$object->setView( $this->getViewNoRender() );
 

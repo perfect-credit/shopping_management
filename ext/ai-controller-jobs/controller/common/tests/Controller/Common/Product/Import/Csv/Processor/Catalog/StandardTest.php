@@ -5,7 +5,7 @@ namespace Aimeos\Controller\Common\Product\Import\Csv\Processor\Catalog;
 
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
- * @copyright Aimeos (aimeos.org), 2015
+ * @copyright Aimeos (aimeos.org), 2015-2016
  */
 class StandardTest extends \PHPUnit_Framework_TestCase
 {
@@ -24,7 +24,7 @@ class StandardTest extends \PHPUnit_Framework_TestCase
 		$result = $typeManager->searchItems( $typeSearch );
 
 		if( ( $typeItem = reset( $result ) ) === false ) {
-			throw new \Exception( 'Product type "default" not found' );
+			throw new \RuntimeException( 'Product type "default" not found' );
 		}
 
 		$item = $manager->createItem();
@@ -332,7 +332,7 @@ class StandardTest extends \PHPUnit_Framework_TestCase
 		$result = $manager->searchItems( $search, array('product') );
 
 		if( ( $item = reset( $result ) ) === false ) {
-			throw new \Exception( sprintf( 'No catalog item for code "%1$s"', $code ) );
+			throw new \RuntimeException( sprintf( 'No catalog item for code "%1$s"', $code ) );
 		}
 
 		return $item;

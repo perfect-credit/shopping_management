@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @copyright Metaways Infosystems GmbH, 2012
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
- * @copyright Aimeos (aimeos.org), 2015
+ * @copyright Metaways Infosystems GmbH, 2012
+ * @copyright Aimeos (aimeos.org), 2015-2016
  * @package Client
  * @subpackage Html
  */
@@ -59,7 +59,7 @@ class Standard
 	private $subPartNames = array();
 	private $tags = array();
 	private $expire;
-	private $view;
+	private $cache;
 
 
 	/**
@@ -306,205 +306,113 @@ class Standard
 	 */
 	protected function setViewParams( \Aimeos\MW\View\Iface $view, array &$tags = array(), &$expire = null )
 	{
-		if( !isset( $this->view ) )
+		if( !isset( $this->cache ) )
 		{
+			$context = $this->getContext();
+			$config = $context->getConfig();
+			$products = $view->get( 'listProductItems', array() );
+
+
+			if( $config->get( 'client/html/catalog/lists/basket-add', false ) )
+			{
+				$domains = array( 'media', 'price', 'text', 'attribute', 'product' );
+				$controller = \Aimeos\Controller\Frontend\Factory::createController( $context, 'catalog' );
+
+
+				$productIds = $this->getProductIds( $products );
+				$productManager = $controller->createManager( 'product' );
+				$productItems = $this->getDomainItems( $productManager, 'product.id', $productIds, $domains );
+				$this->addMetaItems( $productItems, $this->expire, $this->tags );
+
+
+				$attrIds = $this->getAttributeIds( $productItems );
+				$attributeManager = $controller->createManager( 'attribute' );
+				$attributeItems = $this->getDomainItems( $attributeManager, 'attribute.id', $attrIds, $domains );
+				$this->addMetaItems( $attributeItems, $this->expire, $this->tags );
+
+
+				$mediaIds = $this->getMediaIds( $productItems );
+				$mediaManager = $controller->createManager( 'media' );
+				$mediaItems = $this->getDomainItems( $mediaManager, 'media.id', $mediaIds, $domains );
+				$this->addMetaItems( $mediaItems, $this->expire, $this->tags );
+
+
+				$view->itemsAttributeItems = $attributeItems;
+				$view->itemsProductItems = $productItems;
+				$view->itemsMediaItems = $mediaItems;
+			}
+
+
+			if( !empty( $products ) && (bool) $config->get( 'client/html/catalog/lists/stock/enable', true ) == true ) {
+				$view->itemsProductCodes = $this->getProductCodes( $products );
+			}
+
 			$view->itemPosition = ( $this->getProductListPage( $view ) - 1 ) * $this->getProductListSize( $view );
 
-			if( $this->getContext()->getConfig()->get( 'client/html/catalog/lists/basket-add', false ) )
-			{
-				$view = $this->addSelectionProducts( $view, $tags, $expire );
-				$view = $this->addConfigAttributes( $view, $tags, $expire );
-			}
-
-			$this->view = $view;
+			$this->cache = $view;
 		}
 
-		return $this->view;
+		return $this->cache;
 	}
 
 
 	/**
-	 * Adds the necessary view parameters for adding selection products to the basket
+	 * Returns the config, custom, hidden and variant attribute IDs of the given products
 	 *
-	 * @param \Aimeos\MW\View\Iface $view The view object which generates the HTML output
-	 * @param array &$tags Result array for the list of tags that are associated to the output
-	 * @param string|null &$expire Result variable for the expiration date of the output (null for no expiry)
-	 * @return \Aimeos\MW\View\Iface Modified view object
+	 * @param \Aimeos\MShop\Product\Item\Iface[] $productItems List of product items
+	 * @return string[] List of attribute IDs
 	 */
-	protected function addSelectionProducts( \Aimeos\MW\View\Iface $view, array &$tags = array(), &$expire = null )
+	protected function getAttributeIds( array $productItems )
 	{
-		$context = $this->getContext();
-		$config = $context->getConfig();
-		$subProdMap = $prodMap = $prodIds = array();
+		$attrIds = array();
+		$types = array( 'config', 'custom', 'hidden', 'variant' );
 
-		foreach( (array) $view->get( 'listProductItems', array() ) as $product )
-		{
-			if( $product->getType() === 'select' )
-			{
-				foreach( $product->getListItems( 'product', 'default' ) as $listItem )
-				{
-					$prodMap[$listItem->getParentId()][] = $listItem->getRefId();
-					$prodIds[$listItem->getRefId()] = null;
-				}
-			}
+		foreach( $productItems as $product ) {
+			$attrIds = array_merge( $attrIds, array_keys( $product->getRefItems( 'attribute', null, $types ) ) );
 		}
 
-		$prodIds = array_keys( $prodIds );
-
-
-		$domains = array( 'text', 'price', 'media', 'attribute' );
-		$domains = $config->get( 'client/html/catalog/detail/basket/selection/domains', $domains );
-
-		$controller = \Aimeos\Controller\Frontend\Factory::createController( $context, 'catalog' );
-		$subproducts = $controller->getProductItems( $prodIds, $domains );
-		$attrIds = $prodDeps = $attrDeps = $attrTypeDeps = array();
-
-		foreach( $prodMap as $prodId => $list )
-		{
-			foreach( $list as $subProdId )
-			{
-				if( isset( $subproducts[$subProdId] ) )
-				{
-					$subProduct = $subproducts[$subProdId];
-					$subProdMap[$prodId][$subProdId] = $subProduct;
-
-					foreach( $subProduct->getRefItems( 'attribute', null, 'variant' ) as $attrId => $attrItem )
-					{
-						$attrTypeDeps[$prodId][$attrItem->getType()][$attrId] = $attrItem->getPosition();
-						$attrDeps[$prodId][$attrId][] = $subProdId;
-						$prodDeps[$prodId][$subProdId][] = $attrId;
-						$attrIds[$attrId] = null;
-					}
-				}
-			}
-
-			ksort( $attrTypeDeps[$prodId] );
-		}
-
-		$this->addMetaItem( $subproducts, 'product', $this->expire, $this->tags );
-		$this->addMetaList( array_keys( $subproducts ), 'product', $this->expire );
-
-
-		$attrManager = $controller->createManager( 'attribute' );
-
-		$search = $attrManager->createSearch( true );
-		$expr = array(
-			$search->compare( '==', 'attribute.id', array_keys( $attrIds ) ),
-			$search->getConditions(),
-		);
-		$search->setConditions( $search->combine( '&&', $expr ) );
-
-		$domains = $config->get( 'client/html/catalog/lists/items/domains-attributes', array( 'text', 'price', 'media' ) );
-		$attributes = $attrManager->searchItems( $search, $domains );
-
-		$this->addMetaItem( $attributes, 'attribute', $this->expire, $this->tags );
-		$this->addMetaList( array_keys( $attributes ), 'attribute', $this->expire );
-
-
-		if( !empty( $prodIds ) && $config->get( 'client/html/catalog/lists/stock/enable', true ) === true ) {
-			$view->itemsStockUrl = $this->getStockUrl( $view, $prodIds );
-		}
-
-		$view->itemsSelectionProducts = $subProdMap;
-		$view->itemsSelectionProductDependencies = $prodDeps;
-		$view->itemsSelectionAttributeDependencies = $attrDeps;
-		$view->itemsSelectionAttributeTypeDependencies = $attrTypeDeps;
-		$view->itemsSelectionAttributeItems = $attributes;
-
-		return $view;
+		return $attrIds;
 	}
 
 
 	/**
-	 * Adds the necessary view parameters for adding config attributes to the basket
+	 * Returns the media IDs of the selection products
 	 *
-	 * @param \Aimeos\MW\View\Iface $view The view object which generates the HTML output
-	 * @param array &$tags Result array for the list of tags that are associated to the output
-	 * @param string|null &$expire Result variable for the expiration date of the output (null for no expiry)
-	 * @return \Aimeos\MW\View\Iface Modified view object
+	 * @param \Aimeos\MShop\Product\Item\Iface[] $productItems List of product items
+	 * @return string[] List of media IDs
 	 */
-	protected function addConfigAttributes( \Aimeos\MW\View\Iface $view, array &$tags = array(), &$expire = null )
+	protected function getMediaIds( array $productItems )
 	{
-		$context = $this->getContext();
-		$config = $context->getConfig();
-		$attrIds = $attributeTypes = array();
+		$mediaIds = array();
 
-		foreach( (array) $view->get( 'listProductItems', array() ) as $product )
+		foreach( $productItems as $product )
 		{
-			foreach( $product->getListItems( 'attribute' ) as $listItem ) {
-				$attrIds[$listItem->getRefId()] = null;
+			if( $product->getType() === 'select' ) {
+				$mediaIds = array_merge( $mediaIds, array_keys( $product->getRefItems( 'media', 'default', 'default' ) ) );
 			}
 		}
 
-
-		/** client/html/catalog/lists/items/domains-attributes
-		 * A list of domain names whose items should be available for the attributes
-		 * in the "items" part of the catalog list view templates
-		 *
-		 * The templates rendering attributes usually add images, texts and
-		 * maybe prices associated to each item. If you want to display
-		 * additional content like the attributes, you can configure your own
-		 * list of domains (attribute, media, price, product, text, etc. are
-		 * domains) whose items are fetched from the storage.
-		 *
-		 * Please keep in mind that the more domains you add to the
-		 * configuration, the more time is required for fetching the content!
-		 *
-		 * @param array List of domain names
-		 * @since 2016.01
-		 * @category Developer
-		 */
-		$domains = $config->get( 'client/html/catalog/lists/items/domains-attributes', array( 'text', 'price', 'media' ) );
-
-		$controller = \Aimeos\Controller\Frontend\Factory::createController( $context, 'catalog' );
-		$attrManager = $controller->createManager( 'attribute' );
-
-		$search = $attrManager->createSearch( true );
-		$expr = array(
-			$search->compare( '==', 'attribute.id', array_keys( $attrIds ) ),
-			$search->getConditions(),
-		);
-		$search->setConditions( $search->combine( '&&', $expr ) );
-
-		$attrItems = $attrManager->searchItems( $search, $domains );
-
-		$this->addMetaItem( $attrItems, 'attribute', $this->expire, $this->tags );
-		$this->addMetaList( array_keys( $attrItems ), 'attribute', $this->expire );
-
-
-		foreach( (array) $view->get( 'listProductItems', array() ) as $prodId => $product )
-		{
-			foreach( $product->getRefItems( 'attribute', null, 'config' ) as $id => $attribute )
-			{
-				if( isset( $attrItems[$id] ) ) {
-					$attributeTypes[$prodId][$attrItems[$id]->getType()][$id] = $attrItems[$id];
-				}
-			}
-		}
-
-		$view->itemsAttributeConfigItems = $attributeTypes;
-
-		return $view;
+		return $mediaIds;
 	}
 
 
 	/**
-	 * Returns the URL to fetch the stock level details of the given products
+	 * Returns the product IDs of the selection products
 	 *
-	 * @param \Aimeos\MW\View\Iface $view View object
-	 * @param array $productIds List of product IDs
-	 * @return string Generated stock level URL
+	 * @param \Aimeos\MShop\Product\Item\Iface[] $productItems List of product items
+	 * @return string[] List of product IDs
 	 */
-	protected function getStockUrl( \Aimeos\MW\View\Iface $view, array $productIds )
+	protected function getProductIds( array $productItems )
 	{
-		$stockTarget = $view->config( 'client/html/catalog/stock/url/target' );
-		$stockController = $view->config( 'client/html/catalog/stock/url/controller', 'catalog' );
-		$stockAction = $view->config( 'client/html/catalog/stock/url/action', 'stock' );
-		$stockConfig = $view->config( 'client/html/catalog/stock/url/config', array() );
+		$prodIds = array();
 
-		sort( $productIds );
+		foreach( $productItems as $product )
+		{
+			if( $product->getType() === 'select' ) {
+				$prodIds = array_merge( $prodIds, array_keys( $product->getRefItems( 'product', 'default', 'default' ) ) );
+			}
+		}
 
-		$params = array( 's_prodid' => implode( ' ', $productIds ) );
-		return $view->url( $stockTarget, $stockController, $stockAction, $params, array(), $stockConfig );
+		return $prodIds;
 	}
 }

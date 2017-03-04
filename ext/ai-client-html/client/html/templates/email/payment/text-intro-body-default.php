@@ -1,8 +1,8 @@
 <?php
 
 /**
- * @copyright Copyright (c) Metaways Infosystems GmbH, 2013
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
+ * @copyright Metaways Infosystems GmbH, 2013
  * @copyright Aimeos (aimeos.org), 2015-2016
  */
 
@@ -17,11 +17,11 @@ $format = $this->translate( 'client', 'Y-m-d' );
 
 $string = sprintf( $msg, $order->getId(), date_create( $order->getTimeCreated() )->format( $format ), $status );
 
+
 ?>
 <?php $this->block()->start( 'email/payment/text/intro' ); ?>
 
 
 <?php echo wordwrap( strip_tags( $string ) ); ?>
-<?php echo $this->get( 'introBody' ); ?>
 <?php $this->block()->stop(); ?>
 <?php echo $this->block()->get( 'email/payment/text/intro' ); ?>

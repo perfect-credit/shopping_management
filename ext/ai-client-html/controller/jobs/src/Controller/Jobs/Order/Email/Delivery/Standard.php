@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @copyright Metaways Infosystems GmbH, 2014
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
- * @copyright Aimeos (aimeos.org), 2015
+ * @copyright Metaways Infosystems GmbH, 2014
+ * @copyright Aimeos (aimeos.org), 2015-2016
  * @package Controller
  * @subpackage Order
  */
@@ -166,6 +166,9 @@ class Standard
 						$client->getBody();
 
 						$mailer->send( $message );
+
+						$str = sprintf( 'Sent order delivery e-mail for status "%1$s" to "%2$s"', $status, $addr->getEmail() );
+						$context->getLogger()->log( $str, \Aimeos\MW\Logger\Base::DEBUG );
 
 						$statusItem = $orderStatusManager->createItem();
 						$statusItem->setParentId( $id );

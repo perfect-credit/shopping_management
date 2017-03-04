@@ -2,7 +2,7 @@
 
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
- * @copyright Aimeos (aimeos.org), 2015
+ * @copyright Aimeos (aimeos.org), 2015-2016
  * @package MW
  * @subpackage Filesystem
  */
@@ -264,7 +264,7 @@ class Laravel implements Iface, DirIface, MetaIface
 	 * {@inheritDoc}
 	 *
 	 * @param string $path Path to the remote file
-	 * @param string $file Path to the local file
+	 * @param string $local Path to the local file
 	 * @return void
 	 * @throws \Aimeos\MW\Filesystem\Exception If an error occurs
 	 */
@@ -296,7 +296,7 @@ class Laravel implements Iface, DirIface, MetaIface
 		}
 
 		try {
-			$content = $this->fs->put( $path, $content );
+			$this->fs->put( $path, $content );
 		} catch( \Exception $e ) {
 			throw new Exception( $e->getMessage(), 0, $e );
 		}

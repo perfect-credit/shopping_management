@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @copyright Metaways Infosystems GmbH, 2012
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
- * @copyright Aimeos (aimeos.org), 2015
+ * @copyright Metaways Infosystems GmbH, 2012
+ * @copyright Aimeos (aimeos.org), 2015-2016
  * @package Controller
  * @subpackage Frontend
  */
@@ -58,13 +58,13 @@ interface Iface
 	 * @param array $hiddenAttributeIds List of attribute IDs that should be stored along with the product in the order
 	 * @param array $customAttributeValues Associative list of attribute IDs and arbitrary values that should be stored
 	 * 	along with the product in the order
-	 * @param string $warehouse Unique code of the warehouse to deliver the products from
+	 * @param string $stocktype Unique code of the stock type to deliver the products from
 	 * @throws \Aimeos\Controller\Frontend\Basket\Exception If the product isn't available
 	 * @return void
 	 */
 	public function addProduct( $prodid, $quantity = 1, array $options = array(), array $variantAttributeIds = array(),
 		array $configAttributeIds = array(), array $hiddenAttributeIds = array(), array $customAttributeValues = array(),
-		$warehouse = 'default' );
+		$stocktype = 'default' );
 
 
 	/**

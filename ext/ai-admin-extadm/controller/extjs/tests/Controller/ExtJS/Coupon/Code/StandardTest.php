@@ -4,9 +4,9 @@ namespace Aimeos\Controller\ExtJS\Coupon\Code;
 
 
 /**
- * @copyright Metaways Infosystems GmbH, 2014
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
- * @copyright Aimeos (aimeos.org), 2015
+ * @copyright Metaways Infosystems GmbH, 2014
+ * @copyright Aimeos (aimeos.org), 2015-2016
  */
 class StandardTest extends \PHPUnit_Framework_TestCase
 {
@@ -28,7 +28,7 @@ class StandardTest extends \PHPUnit_Framework_TestCase
 		$this->testdir = $this->context->getConfig()->get( 'controller/extjs/coupon/code/standard/uploaddir', './tmp' );
 
 		if( !is_dir( $this->testdir ) && mkdir( $this->testdir, 0775, true ) === false ) {
-			throw new \Exception( sprintf( 'Unable to create missing upload directory "%1$s"', $this->testdir ) );
+			throw new \RuntimeException( sprintf( 'Unable to create missing upload directory "%1$s"', $this->testdir ) );
 		}
 
 		$this->object = new \Aimeos\Controller\ExtJS\Coupon\Code\Standard( $this->context );
@@ -79,7 +79,7 @@ class StandardTest extends \PHPUnit_Framework_TestCase
 		$result = $couponManager->searchItems( $search );
 
 		if( ( $couponItem = reset( $result ) ) === false ) {
-			throw new \Exception( 'No coupon item found' );
+			throw new \RuntimeException( 'No coupon item found' );
 		}
 
 		$saveParams = (object) array(

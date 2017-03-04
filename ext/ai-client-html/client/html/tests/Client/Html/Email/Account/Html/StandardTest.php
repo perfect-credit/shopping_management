@@ -1,12 +1,14 @@
 <?php
 
+/**
+ * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
+ * @copyright Aimeos (aimeos.org), 2015-2016
+ */
+
+
 namespace Aimeos\Client\Html\Email\Account\Html;
 
 
-/**
- * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
- * @copyright Aimeos (aimeos.org), 2015
- */
 class StandardTest extends \PHPUnit_Framework_TestCase
 {
 	private static $customerItem;
@@ -26,17 +28,11 @@ class StandardTest extends \PHPUnit_Framework_TestCase
 		$result = $manager->searchItems( $search );
 
 		if( ( self::$customerItem = reset( $result ) ) === false ) {
-			throw new \Exception( 'No customer found' );
+			throw new \RuntimeException( 'No customer found' );
 		}
 	}
 
 
-	/**
-	 * Sets up the fixture, for example, opens a network connection.
-	 * This method is called before a test is executed.
-	 *
-	 * @access protected
-	 */
 	protected function setUp()
 	{
 		$this->context = \TestHelperHtml::getContext();
@@ -55,30 +51,22 @@ class StandardTest extends \PHPUnit_Framework_TestCase
 	}
 
 
-	/**
-	 * Tears down the fixture, for example, closes a network connection.
-	 * This method is called after a test is executed.
-	 *
-	 * @access protected
-	 */
 	protected function tearDown()
 	{
 		unset( $this->object );
 	}
 
 
-	public function testGetHeader()
-	{
-		$output = $this->object->getHeader();
-		$this->assertNotNull( $output );
-	}
-
-
 	public function testGetBody()
 	{
 		$ds = DIRECTORY_SEPARATOR;
-		$file = '..' . $ds . 'themes' . $ds . 'elegance' . $ds . 'media' . $ds . 'aimeos.png';
-		$this->context->getConfig()->set( 'client/html/email/logo', $file );
+
+		$logo = '..' . $ds . 'themes' . $ds . 'elegance' . $ds . 'media' . $ds . 'aimeos.png';
+		$this->context->getConfig()->set( 'client/html/email/logo', $logo );
+
+		$theme = '..' . $ds . 'themes' . $ds . 'elegance';
+		$this->context->getConfig()->set( 'client/html/common/template/baseurl', $theme );
+
 
 		$this->emailMock->expects( $this->once() )->method( 'embedAttachment' )
 			->will( $this->returnValue( 'cid:123-unique-id' ) );
@@ -88,8 +76,20 @@ class StandardTest extends \PHPUnit_Framework_TestCase
 
 		$output = $this->object->getBody();
 
-		$this->assertStringStartsWith( '<html>', $output );
+		$this->assertContains( '<html>', $output );
 		$this->assertContains( 'cid:123-unique-id', $output );
+
+		$this->assertContains( '<p class="email-common-salutation', $output );
+
+		$this->assertContains( '<p class="email-common-intro', $output );
+		$this->assertContains( 'An account', $output );
+
+		$this->assertRegexp( '#<style.*/style>.*<div class="account-detail content-block">#smU', $output );
+		$this->assertContains( 'Account', $output );
+		$this->assertContains( 'Password', $output );
+
+		$this->assertContains( '<p class="email-common-outro', $output );
+		$this->assertContains( 'If you have any questions', $output );
 	}
 
 

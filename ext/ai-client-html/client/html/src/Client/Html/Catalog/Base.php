@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @copyright Metaways Infosystems GmbH, 2014
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
- * @copyright Aimeos (aimeos.org), 2015
+ * @copyright Metaways Infosystems GmbH, 2014
+ * @copyright Aimeos (aimeos.org), 2015-2016
  * @package Client
  * @subpackage Html
  */
@@ -202,6 +202,28 @@ abstract class Base
 		}
 
 		return $list;
+	}
+
+
+	/**
+	 * Returns the domain items for the given IDs including the referenced items
+	 *
+	 * @param \Aimeos\MShop\Common\Manager\Iface $manager Domain specific manager
+	 * @param string $key Domain key for seaching the items by ID
+	 * @param string[] $ids Unique domain IDs
+	 * @param string[] List of domain names whose items should be fetched too
+	 * @return \Aimeos\MShop\Common\Item\Iface[] Domain items
+	 */
+	protected function getDomainItems( \Aimeos\MShop\Common\Manager\Iface $manager, $key, array $ids, array $domains )
+	{
+		$search = $manager->createSearch( true );
+		$expr = array(
+			$search->compare( '==', $key, $ids ),
+			$search->getConditions(),
+		);
+		$search->setConditions( $search->combine( '&&', $expr ) );
+
+		return $manager->searchItems( $search, $domains );
 	}
 
 
@@ -409,6 +431,26 @@ abstract class Base
 	protected function getProductListSort( \Aimeos\MW\View\Iface $view, &$sortdir )
 	{
 		return $this->getProductListSortByParam( $view->param(), $sortdir );
+	}
+
+
+	/**
+	 * Returns the sorted product codes of the given products
+	 *
+	 * @param \Aimeos\MShop\Product\Item\Iface[] $products List of product items
+	 * @return array List of product codes
+	 */
+	protected function getProductCodes( array $products )
+	{
+		$productCodes = array();
+
+		foreach( $products as $product ) {
+			$productCodes[] = $product->getCode();
+		}
+
+		sort( $productCodes );
+
+		return $productCodes;
 	}
 
 

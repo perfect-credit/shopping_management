@@ -5,7 +5,7 @@ namespace Aimeos\Controller\Jobs\Product\Import\Csv;
 
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
- * @copyright Aimeos (aimeos.org), 2015
+ * @copyright Aimeos (aimeos.org), 2015-2016
  */
 class StandardTest extends \PHPUnit_Framework_TestCase
 {
@@ -239,7 +239,7 @@ class StandardTest extends \PHPUnit_Framework_TestCase
 		$config->set( 'controller/jobs/product/import/csv/backup', 'tmp/test-%Y-%m-%d.zip' );
 
 		if( copy( __DIR__ . '/_testfiles/import.zip', 'tmp/import.zip' ) === false ) {
-			throw new \Exception( 'Unable to copy test file' );
+			throw new \RuntimeException( 'Unable to copy test file' );
 		}
 
 		$this->object->run();
@@ -259,7 +259,7 @@ class StandardTest extends \PHPUnit_Framework_TestCase
 		$config->set( 'controller/jobs/product/import/csv/backup', 'tmp/notexist/import.zip' );
 
 		if( copy( __DIR__ . '/_testfiles/import.zip', 'tmp/import.zip' ) === false ) {
-			throw new \Exception( 'Unable to copy test file' );
+			throw new \RuntimeException( 'Unable to copy test file' );
 		}
 
 		$this->setExpectedException( '\\Aimeos\\Controller\\Jobs\\Exception' );

@@ -1,25 +1,21 @@
 <?php
 
+/**
+ * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
+ * @copyright Metaways Infosystems GmbH, 2013
+ * @copyright Aimeos (aimeos.org), 2015-2016
+ */
+
+
 namespace Aimeos\Client\Html\Checkout\Standard\Address\Billing;
 
 
-/**
- * @copyright Metaways Infosystems GmbH, 2013
- * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
- * @copyright Aimeos (aimeos.org), 2015
- */
 class StandardTest extends \PHPUnit_Framework_TestCase
 {
 	private $object;
 	private $context;
 
 
-	/**
-	 * Sets up the fixture, for example, opens a network connection.
-	 * This method is called before a test is executed.
-	 *
-	 * @access protected
-	 */
 	protected function setUp()
 	{
 		$this->context = \TestHelperHtml::getContext();
@@ -30,23 +26,10 @@ class StandardTest extends \PHPUnit_Framework_TestCase
 	}
 
 
-	/**
-	 * Tears down the fixture, for example, closes a network connection.
-	 * This method is called after a test is executed.
-	 *
-	 * @access protected
-	 */
 	protected function tearDown()
 	{
 		\Aimeos\Controller\Frontend\Basket\Factory::createController( $this->context )->clear();
 		unset( $this->object );
-	}
-
-
-	public function testGetHeader()
-	{
-		$output = $this->object->getHeader();
-		$this->assertNotNull( $output );
 	}
 
 
@@ -64,19 +47,6 @@ class StandardTest extends \PHPUnit_Framework_TestCase
 
 		$this->assertGreaterThan( 0, count( $view->billingMandatory ) );
 		$this->assertGreaterThan( 0, count( $view->billingOptional ) );
-	}
-
-
-	public function testGetBodyAddressEU()
-	{
-		$config = $this->context->getConfig();
-		$config->set( 'client/html/common/partials/address', 'common/partials/address-eu.php' );
-
-		$view = \TestHelperHtml::getView( 'unittest', $config );
-		$this->object->setView( $view );
-
-		$output = $this->object->getBody();
-		$this->assertRegexp( '/form-item postal.*form-item city/smU', $output );
 	}
 
 
@@ -287,7 +257,7 @@ class StandardTest extends \PHPUnit_Framework_TestCase
 		$result = $customerManager->searchItems( $search );
 
 		if( ( $customer = reset( $result ) ) === false ) {
-			throw new \Exception( 'Customer item not found' );
+			throw new \RuntimeException( 'Customer item not found' );
 		}
 
 		return $customer;

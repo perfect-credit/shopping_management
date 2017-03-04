@@ -2,7 +2,7 @@
 
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
- * @copyright Aimeos (aimeos.org), 2015
+ * @copyright Aimeos (aimeos.org), 2015-2016
  * @package Admin
  * @subpackage JsonAdm
  */
@@ -111,7 +111,7 @@ class Standard
 	{
 		$list = array();
 		$prodIds = array_keys( $items );
-		$include = array_intersect( $include, array( 'product/property', 'product/stock' ) );
+		$include = array_intersect( $include, array( 'product/property' ) );
 
 		foreach( $include as $type )
 		{

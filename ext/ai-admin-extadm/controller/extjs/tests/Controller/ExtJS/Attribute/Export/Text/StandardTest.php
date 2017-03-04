@@ -4,9 +4,9 @@ namespace Aimeos\Controller\ExtJS\Attribute\Export\Text;
 
 
 /**
- * @copyright Metaways Infosystems GmbH, 2013
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
- * @copyright Aimeos (aimeos.org), 2015
+ * @copyright Metaways Infosystems GmbH, 2013
+ * @copyright Aimeos (aimeos.org), 2015-2016
  */
 class StandardTest extends \PHPUnit_Framework_TestCase
 {
@@ -73,7 +73,7 @@ class StandardTest extends \PHPUnit_Framework_TestCase
 		$zip->close();
 
 		if( unlink( $file ) === false ) {
-			throw new \Exception( 'Unable to remove export file' );
+			throw new \RuntimeException( 'Unable to remove export file' );
 		}
 
 		$deCSV = $testdir . DIRECTORY_SEPARATOR . 'de.csv';
@@ -88,11 +88,11 @@ class StandardTest extends \PHPUnit_Framework_TestCase
 
 		fclose( $fh );
 		if( unlink( $deCSV ) === false ) {
-			throw new \Exception( 'Unable to remove export file' );
+			throw new \RuntimeException( 'Unable to remove export file' );
 		}
 
 		if( rmdir( $testdir ) === false ) {
-			throw new \Exception( 'Unable to remove test export directory' );
+			throw new \RuntimeException( 'Unable to remove test export directory' );
 		}
 
 		$this->assertEquals( 'Language ID', $lines[0][0] );

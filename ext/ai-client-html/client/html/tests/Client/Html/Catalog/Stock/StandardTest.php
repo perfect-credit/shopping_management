@@ -4,9 +4,9 @@ namespace Aimeos\Client\Html\Catalog\Stock;
 
 
 /**
- * @copyright Metaways Infosystems GmbH, 2013
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
- * @copyright Aimeos (aimeos.org), 2015
+ * @copyright Metaways Infosystems GmbH, 2013
+ * @copyright Aimeos (aimeos.org), 2015-2016
  */
 class StandardTest extends \PHPUnit_Framework_TestCase
 {
@@ -45,7 +45,7 @@ class StandardTest extends \PHPUnit_Framework_TestCase
 			->getMock();
 
 		$object->expects( $this->once() )->method( 'setViewParams' )
-			->will( $this->throwException( new \Exception() ) );
+			->will( $this->throwException( new \RuntimeException() ) );
 
 		$object->setView( \TestHelperHtml::getView() );
 
@@ -55,25 +55,12 @@ class StandardTest extends \PHPUnit_Framework_TestCase
 
 	public function testGetBody()
 	{
-		$productId = $this->getProductItem()->getId();
-
 		$view = $this->object->getView();
-		$helper = new \Aimeos\MW\View\Helper\Param\Standard( $view, array( 's_prodid' => $productId ) );
+		$helper = new \Aimeos\MW\View\Helper\Param\Standard( $view, array( 's_prodcode' => 'CNC' ) );
 		$view->addHelper( 'param', $helper );
 
 		$output = $this->object->getBody();
-		$this->assertRegExp( '/"' . $productId . '".*stock-high/', $output );
-	}
-
-
-	public function testGetBodyStockUnlimited()
-	{
-		$view = $this->object->getView();
-		$helper = new \Aimeos\MW\View\Helper\Param\Standard( $view, array( 's_prodid' => -1 ) );
-		$view->addHelper( 'param', $helper );
-
-		$output = $this->object->getBody();
-		$this->assertRegExp( '/"-1".*stock-unlimited/', $output );
+		$this->assertRegExp( '/"CNC".*stock-high/', $output );
 	}
 
 
@@ -85,7 +72,7 @@ class StandardTest extends \PHPUnit_Framework_TestCase
 			->getMock();
 
 		$object->expects( $this->once() )->method( 'setViewParams' )
-			->will( $this->throwException( new \Exception() ) );
+			->will( $this->throwException( new \RuntimeException() ) );
 
 		$object->setView( \TestHelperHtml::getView() );
 
@@ -104,20 +91,5 @@ class StandardTest extends \PHPUnit_Framework_TestCase
 	{
 		$this->setExpectedException( '\\Aimeos\\Client\\Html\\Exception' );
 		$this->object->getSubClient( '$$$', '$$$' );
-	}
-
-
-	protected function getProductItem()
-	{
-		$manager = \Aimeos\MShop\Product\Manager\Factory::createManager( $this->context );
-		$search = $manager->createSearch();
-		$search->setConditions( $search->compare( '==', 'product.code', 'CNC' ) );
-		$items = $manager->searchItems( $search );
-
-		if( ( $item = reset( $items ) ) === false ) {
-			throw new \Exception( 'No product item with code "CNC" found' );
-		}
-
-		return $item;
 	}
 }

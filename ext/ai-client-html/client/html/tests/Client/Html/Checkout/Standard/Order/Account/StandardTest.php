@@ -1,12 +1,14 @@
 <?php
 
+/**
+ * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
+ * @copyright Aimeos (aimeos.org), 2015-2016
+ */
+
+
 namespace Aimeos\Client\Html\Checkout\Standard\Order\Account;
 
 
-/**
- * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
- * @copyright Aimeos (aimeos.org), 2015
- */
 class StandardTest extends \PHPUnit_Framework_TestCase
 {
 	private $object;
@@ -31,13 +33,6 @@ class StandardTest extends \PHPUnit_Framework_TestCase
 
 		\Aimeos\Controller\Frontend\Basket\Factory::createController( $this->context )->clear();
 		unset( $this->object );
-	}
-
-
-	public function testGetHeader()
-	{
-		$output = $this->object->getHeader();
-		$this->assertNotNull( $output );
 	}
 
 
@@ -72,7 +67,7 @@ class StandardTest extends \PHPUnit_Framework_TestCase
 		$result = $manager->searchItems( $search );
 
 		if( ( $customerItem = reset( $result ) ) === false ) {
-			throw new \Exception( 'No customer item found' );
+			throw new \RuntimeException( 'No customer item found' );
 		}
 
 		$addrItem = $customerItem->getPaymentAddress();

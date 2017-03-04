@@ -3,7 +3,7 @@
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Metaways Infosystems GmbH, 2014
- * @copyright Aimeos (aimeos.org), 2015
+ * @copyright Aimeos (aimeos.org), 2015-2016
  * @package Controller
  * @subpackage ExtJS
  */
@@ -46,7 +46,7 @@ class Standard
 	{
 		$list = parent::getServiceDescription();
 
-		$list['Admin_Cache.flush'] = array(
+		$list['Admin_Cache.clear'] = array(
 			"parameters" => array(
 				array( "type" => "string", "name" => "site", "optional" => false ),
 			),
@@ -63,12 +63,12 @@ class Standard
 	 * @param \stdClass $params Associative list of parameters
 	 * @return array Associative list with success value
 	 */
-	public function flush( \stdClass $params )
+	public function clear( \stdClass $params )
 	{
 		$this->checkParams( $params, array( 'site' ) );
 		$this->setLocale( $params->site );
 
-		$this->getContext()->getCache()->flush();
+		$this->getContext()->getCache()->clear();
 
 		return array(
 			'success' => true,

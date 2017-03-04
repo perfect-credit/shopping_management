@@ -2,7 +2,7 @@
 
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
- * @copyright Copyright (c) Metaways Infosystems GmbH, 2012
+ * @copyright Metaways Infosystems GmbH, 2012
  * @copyright Aimeos (aimeos.org), 2015-2016
  */
 
@@ -22,22 +22,6 @@ $listAction = $this->config( 'client/html/catalog/lists/url/action', 'list' );
 $listConfig = $this->config( 'client/html/catalog/lists/url/config', array() );
 
 
-/** client/html/common/partials/tree
- * Relative path to the category tree partial template file
- *
- * Partials are templates which are reused in other templates and generate
- * reoccuring blocks filled with data from the assigned values. The tree
- * partial creates an HTML block of nested lists for category trees.
- *
- * The partial template files are usually stored in the templates/partials/ folder
- * of the core or the extensions. The configured path to the partial file must
- * be relative to the templates/ folder, e.g. "common/partials/address-default.php".
- *
- * @param string Relative path to the template file
- * @since 2015.08
- * @category Developer
- */
-
 /** client/html/catalog/filter/tree/force-search
  * Use the current category in full text searches
  *
@@ -54,26 +38,50 @@ $listConfig = $this->config( 'client/html/catalog/lists/url/config', array() );
  * @category Developer
  * @category User
  */
+$enforce = $this->config( 'client/html/catalog/filter/tree/force-search', false );
+
+/** client/html/catalog/filter/partials/tree
+ * Relative path to the category tree partial template file
+ *
+ * Partials are templates which are reused in other templates and generate
+ * reoccuring blocks filled with data from the assigned values. The tree
+ * partial creates an HTML block of nested lists for category trees.
+ *
+ * @param string Relative path to the template file
+ * @since 2017.01
+ * @category Developer
+ */
+
 
 ?>
-<?php $this->block()->start( 'catalog/tree' ); ?>
+<?php $this->block()->start( 'catalog/filter/tree' ); ?>
 <section class="catalog-filter-tree <?php echo ( $counts == true ? 'catalog-filter-count' : '' ); ?>">
-<?php if( $this->config( 'client/html/catalog/filter/tree/force-search', false ) ) : ?>
-	<input type="hidden" name="<?php echo $enc->attr( $this->formparam( array( 'f_catid' ) ) ); ?>" value="<?php echo $enc->attr( $this->param( 'f_catid' ) ); ?>" />
-<?php endif; ?>
+
+	<?php if( $enforce ) : ?>
+		<input type="hidden"
+			name="<?php echo $enc->attr( $this->formparam( array( 'f_catid' ) ) ); ?>"
+			value="<?php echo $enc->attr( $this->param( 'f_catid' ) ); ?>"
+		/>
+	<?php endif; ?>
+
 	<h2><?php echo $enc->html( $this->translate( 'client', 'Categories' ), $enc::TRUST ); ?></h2>
-<?php if( isset( $params['f_catid'] ) ) : ?>
-<?php	unset( $params['f_catid'], $params['f_name'] ); ?>
-	<div class="category-selected">
-		<span class="selected-intro"><?php echo $enc->html( $this->translate( 'client', 'Your choice' ), $enc::TRUST ); ?></span>
-		<a class="selected-category" href="<?php echo $enc->attr( $this->url( $listTarget, $listController, $listAction, $params, array(), $listConfig ) ); ?>"><?php echo $enc->html( $name, $enc::TRUST ); ?></a></li>
-	</div>
-<?php endif; ?>
-<?php if( isset( $this->treeCatalogTree ) && $this->treeCatalogTree->getStatus() > 0 ) : ?>
-<?php	$values = array( 'nodes' => array( $this->treeCatalogTree ), 'path' => $path, 'params' => $this->get( 'treeFilterParams', array() ) ); ?>
-<?php 	echo $this->partial( $this->config( 'client/html/common/partials/tree', 'common/partials/tree-default.php' ), $values ); ?>
-<?php endif; ?>
-<?php echo $this->get( 'treeBody' ); ?>
+
+	<?php if( isset( $params['f_catid'] ) ) : unset( $params['f_catid'], $params['f_name'] ); ?>
+		<div class="category-selected">
+			<span class="selected-intro"><?php echo $enc->html( $this->translate( 'client', 'Your choice' ), $enc::TRUST ); ?></span>
+			<a class="selected-category" href="<?php echo $enc->attr( $this->url( $listTarget, $listController, $listAction, $params, array(), $listConfig ) ); ?>">
+				<?php echo $enc->html( $name, $enc::TRUST ); ?>
+			</a>
+		</div>
+	<?php endif; ?>
+
+	<?php if( isset( $this->treeCatalogTree ) && $this->treeCatalogTree->getStatus() > 0 ) : ?>
+		<?php echo $this->partial(
+			$this->config( 'client/html/catalog/filter/partials/tree', 'catalog/filter/tree-default.php' ),
+			array( 'nodes' => array( $this->treeCatalogTree ), 'path' => $path, 'params' => $this->get( 'treeFilterParams', array() ) )
+		); ?>
+	<?php endif; ?>
+
 </section>
 <?php $this->block()->stop(); ?>
-<?php echo $this->block()->get( 'catalog/tree' ); ?>
+<?php echo $this->block()->get( 'catalog/filter/tree' ); ?>

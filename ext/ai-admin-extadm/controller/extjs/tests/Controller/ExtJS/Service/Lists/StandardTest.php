@@ -4,9 +4,9 @@ namespace Aimeos\Controller\ExtJS\Service\Lists;
 
 
 /**
- * @copyright Metaways Infosystems GmbH, 2011
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
- * @copyright Aimeos (aimeos.org), 2015
+ * @copyright Metaways Infosystems GmbH, 2011
+ * @copyright Aimeos (aimeos.org), 2015-2016
  */
 class StandardTest extends \PHPUnit_Framework_TestCase
 {
@@ -64,7 +64,7 @@ class StandardTest extends \PHPUnit_Framework_TestCase
 		$resultService = $serviceManager->searchItems( $search );
 
 		if( ( $item = reset( $resultService ) ) === false ) {
-			throw new \Exception( 'No service item found' );
+			throw new \RuntimeException( 'No service item found' );
 		}
 
 		$params = (object) array(
