@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="en" class="no-js">
+<html lang="nl" class="no-js">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     @yield('aimeos_header')
-    <title>Manenblussers Fashion</title>
+    <title>Maneblussers Fashion</title>
     <link href='//fonts.googleapis.com/css?family=Roboto:400,300' rel='stylesheet' type='text/css'>
     <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
     @yield('aimeos_styles')
@@ -20,7 +20,9 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="#">Manenblussers Fashion</a>
+            <a class="navbar-brand" href="#">
+                <img src="/images/Maneblusser.jpg" alt="Maneblusser Fashion" title="Maneblusser Fashion" width="24" height="24">
+            </a>
         </div>
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">

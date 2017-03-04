@@ -6,7 +6,7 @@
 
     <h2 class="h2">Hoeveel kost de verzending?</h2>
 
-    <p>Je spullen van bij Manenblussers Fashion worden gratis verzonden naar België, Nederland of Luxemburg wanneer je bestelt voor meer dan €59. Anders zullen pakketten van bijvoorbeeld onder de 2 kilo worden verzonden voor van €5,90 euro.</p>
+    <p>Je spullen van bij Maneblusser Fashion worden gratis verzonden naar België, Nederland of Luxemburg wanneer je bestelt voor meer dan €59. Anders zullen pakketten van bijvoorbeeld onder de 2 kilo worden verzonden voor van €5,90 euro.</p>
 
     <p>We hebben een gratis verzendingsbeleid voor Duitsland, Frankrijk en het Verenigd Koninkrijk vanaf 99 euro. Pakketten van bijvoorbeeld onder de 2 kilo kunnen naar deze landen worden verzonden voor €12-€14.</p>
 
@@ -15,7 +15,7 @@
     <p>Wij verzenden ook buiten Europa.  Contacteer ons gerust voor de verzendkosten naar uw land.
         Cadeaubonnen worden altijd gratis bezorgd. In andere gevallen rekenen wij een verzendkost aan op basis van bestemming en gewicht. Wilt u gedetailleerde informatie over de levering in uw land: info@manenblussersfashion.be.</p>
 
-    <h2>Hoe snel levert Manenblussers Fashion?</h2>
+    <h2>Hoe snel levert Maneblusser Fashion?</h2>
 
     <p>In België bedragen levertermijnen doorgaans twee tot drie werkdagen. Internationale bestellingen nemen een beetje meer tijd in beslag: normaal gezien 5 dagen in de EU. Voor een express-levering, neem vooraf contact met ons op.</p>
 
